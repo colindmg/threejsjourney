@@ -41,24 +41,26 @@ window.addEventListener("dblclick", () => {
 const scene = new THREE.Scene();
 
 // Object
-const positions = new Float32Array([
-  0,
-  0,
-  0, // Vertex 1
-  0,
-  1,
-  0, // Vertex 2
-  1,
-  0,
-  0, // Vertex 3
-]);
+const geometry = new THREE.BufferGeometry();
 
-const positionsAttribute = new THREE.BufferAttribute(positions, 3);
+const count = 500;
+const positionsArray = new Float32Array(count * 3 * 3);
 
-const mesh = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1, 4, 4, 4),
-  new THREE.MeshBasicMaterial({ color: 0xe5e5e5, wireframe: true })
-);
+for (let i = 0; i < count * 3 * 3; i++) {
+  positionsArray[i] = (Math.random() - 0.5) * 2;
+}
+
+const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+geometry.setAttribute("position", positionsAttribute);
+
+// const geometry = new THREE.SphereGeometry(1);
+
+const material = new THREE.MeshBasicMaterial({
+  color: 0xededed,
+  wireframe: true,
+});
+
+const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 // Camera
