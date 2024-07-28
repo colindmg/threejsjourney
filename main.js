@@ -1,6 +1,23 @@
+import gsap from "gsap";
+import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./style.css";
+
+/**
+ * GUI
+ */
+const gui = new GUI({
+  width: 300,
+  title: "Debug UI",
+});
+const debugObject = {};
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "h") {
+    gui.show(gui._hidden);
+  }
+});
 
 /**
  * Base
@@ -8,7 +25,59 @@ import "./style.css";
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
-// Sizes
+// Scene
+const scene = new THREE.Scene();
+
+/**
+ * Object
+ */
+debugObject.color = "#3A6EA6";
+
+const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
+const material = new THREE.MeshBasicMaterial({
+  color: debugObject.color,
+  wireframe: true,
+});
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+// Debug
+
+const cubeTweaks = gui.addFolder("Cube Tweaks");
+
+cubeTweaks.add(mesh.position, "y").min(-3).max(3).step(0.01).name("Y position");
+cubeTweaks.add(mesh, "visible");
+cubeTweaks.add(material, "wireframe");
+cubeTweaks.addColor(debugObject, "color").onChange(() => {
+  material.color.set(debugObject.color);
+});
+
+debugObject.spin = () => {
+  gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
+};
+cubeTweaks.add(debugObject, "spin");
+
+debugObject.subdivision = 2;
+cubeTweaks
+  .add(debugObject, "subdivision")
+  .min(1)
+  .max(20)
+  .step(1)
+  .onFinishChange(() => {
+    mesh.geometry.dispose();
+    mesh.geometry = new THREE.BoxGeometry(
+      1,
+      1,
+      1,
+      debugObject.subdivision,
+      debugObject.subdivision,
+      debugObject.subdivision
+    );
+  });
+
+/**
+ * Sizes
+ */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -28,66 +97,42 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-// Fullscreen
-window.addEventListener("dblclick", () => {
-  if (!document.fullscreenElement) {
-    canvas.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
-});
-
-// Scene
-const scene = new THREE.Scene();
-
-// Object
-const geometry = new THREE.BufferGeometry();
-
-const count = 500;
-const positionsArray = new Float32Array(count * 3 * 3);
-
-for (let i = 0; i < count * 3 * 3; i++) {
-  positionsArray[i] = (Math.random() - 0.5) * 2;
-}
-
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-geometry.setAttribute("position", positionsAttribute);
-
-// const geometry = new THREE.SphereGeometry(1);
-
-const material = new THREE.MeshBasicMaterial({
-  color: 0xededed,
-  wireframe: true,
-});
-
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
-
-// Camera
+/**
+ * Camera
+ */
+// Base camera
 const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.z = 3;
-camera.lookAt(mesh.position);
+camera.position.x = 1;
+camera.position.y = 1;
+camera.position.z = 2;
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-// Renderer
+/**
+ * Renderer
+ */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// Animate
+/**
+ * Animate
+ */
+const clock = new THREE.Clock();
 
 const tick = () => {
+  const elapsedTime = clock.getElapsedTime();
+
   // Update controls
   controls.update();
 
