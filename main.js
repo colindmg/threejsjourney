@@ -1,23 +1,19 @@
-import gsap from "gsap";
-import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./style.css";
 
 /**
- * GUI
+ * Textures
  */
-const gui = new GUI({
-  width: 300,
-  title: "Debug UI",
-});
-const debugObject = {};
+const image = new Image();
+const texture = new THREE.Texture(image);
+texture.colorSpace = THREE.SRGBColorSpace;
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "h") {
-    gui.show(gui._hidden);
-  }
-});
+image.onload = () => {
+  texture.needsUpdate = true;
+};
+
+image.src = "/textures/door/color.jpg";
 
 /**
  * Base
@@ -31,49 +27,10 @@ const scene = new THREE.Scene();
 /**
  * Object
  */
-debugObject.color = "#3A6EA6";
-
-const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
-const material = new THREE.MeshBasicMaterial({
-  color: debugObject.color,
-  wireframe: true,
-});
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({ map: texture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
-
-// Debug
-
-const cubeTweaks = gui.addFolder("Cube Tweaks");
-
-cubeTweaks.add(mesh.position, "y").min(-3).max(3).step(0.01).name("Y position");
-cubeTweaks.add(mesh, "visible");
-cubeTweaks.add(material, "wireframe");
-cubeTweaks.addColor(debugObject, "color").onChange(() => {
-  material.color.set(debugObject.color);
-});
-
-debugObject.spin = () => {
-  gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
-};
-cubeTweaks.add(debugObject, "spin");
-
-debugObject.subdivision = 2;
-cubeTweaks
-  .add(debugObject, "subdivision")
-  .min(1)
-  .max(20)
-  .step(1)
-  .onFinishChange(() => {
-    mesh.geometry.dispose();
-    mesh.geometry = new THREE.BoxGeometry(
-      1,
-      1,
-      1,
-      debugObject.subdivision,
-      debugObject.subdivision,
-      debugObject.subdivision
-    );
-  });
 
 /**
  * Sizes
@@ -109,7 +66,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.x = 1;
 camera.position.y = 1;
-camera.position.z = 2;
+camera.position.z = 1;
 scene.add(camera);
 
 // Controls
