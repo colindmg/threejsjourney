@@ -1,4 +1,4 @@
-import GUI from "lil-gui";
+// import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
@@ -9,7 +9,7 @@ import "./style.css";
  * Base
  */
 // Debug
-const gui = new GUI();
+// const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -18,13 +18,16 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 // Axes helper
-const axesHelper = new THREE.AxesHelper();
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper();
+// scene.add(axesHelper);
 
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
+
+const matcapTexture = textureLoader.load("/textures/matcaps/3.png");
+matcapTexture.colorSpace = THREE.SRGBColorSpace;
 
 /**
  * Fonts
@@ -35,19 +38,41 @@ fontLoader.load("/fonts/Rosamila_Regular.json", (font) => {
   const textGeometry = new TextGeometry("Creatives", {
     font,
     size: 0.5,
-    depth: 0.2,
-    curveSegments: 4,
+    depth: 0.075,
+    curveSegments: 8,
     bevelEnabled: true,
     bevelThickness: 0.03,
     bevelSize: 0.02,
     bevelOffset: 0,
-    bevelSegments: 4,
+    bevelSegments: 5,
   });
 
-  const textMaterial = new THREE.MeshBasicMaterial();
-  const text = new THREE.Mesh(textGeometry, textMaterial);
-  text.material.wireframe = true;
+  textGeometry.center();
+
+  const material = new THREE.MeshMatcapMaterial();
+  material.matcap = matcapTexture;
+
+  const text = new THREE.Mesh(textGeometry, material);
   scene.add(text);
+
+  // Boxs
+  const boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+
+  for (let i = 0; i < 50; i++) {
+    const box = new THREE.Mesh(boxGeometry, material);
+
+    box.position.x = (Math.random() - 0.5) * 10;
+    box.position.y = (Math.random() - 0.5) * 10;
+    box.position.z = (Math.random() - 0.5) * 10;
+
+    box.rotation.x = Math.random() * Math.PI;
+    box.rotation.y = Math.random() * Math.PI;
+
+    const scale = Math.random() * (0.7 - 0.3) + 0.3;
+    box.scale.set(scale, scale, scale);
+
+    scene.add(box);
+  }
 });
 
 /**
