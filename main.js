@@ -20,7 +20,7 @@ const scene = new THREE.Scene();
  */
 
 // Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0);
 scene.add(ambientLight);
 const ambientLightFolder = gui.addFolder("Ambient Light");
 ambientLightFolder.add(ambientLight, "intensity").min(0).max(3).step(0.001);
@@ -69,6 +69,36 @@ const pointLightFolder = gui.addFolder("Point Light");
 pointLightFolder.add(pointLight, "intensity").min(0).max(3).step(0.001);
 pointLightFolder.add(pointLight, "distance").min(0).max(10).step(0.001);
 pointLightFolder.add(pointLight, "decay").min(0).max(10).step(0.001);
+
+// RectArea light
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1);
+rectAreaLight.position.set(-1.5, 0, 1.5);
+rectAreaLight.lookAt(new THREE.Vector3());
+scene.add(rectAreaLight);
+const rectAreaLightFolder = gui.addFolder("RectArea Light");
+rectAreaLightFolder.add(rectAreaLight, "intensity").min(0).max(10).step(0.001);
+rectAreaLightFolder.add(rectAreaLight, "width").min(0).max(10).step(0.001);
+rectAreaLightFolder.add(rectAreaLight, "height").min(0).max(10).step(0.001);
+
+// Spot light
+const spotLight = new THREE.SpotLight(
+  0x78ff00,
+  4.5,
+  10,
+  Math.PI * 0.1,
+  0.25,
+  1
+);
+spotLight.position.set(0, 2, 3);
+scene.add(spotLight);
+spotLight.target.position.x = -1.5;
+scene.add(spotLight.target);
+const spotLightFolder = gui.addFolder("Spot Light");
+spotLightFolder.add(spotLight, "intensity").min(0).max(10).step(0.001);
+spotLightFolder.add(spotLight, "distance").min(0).max(10).step(0.001);
+spotLightFolder.add(spotLight, "angle").min(0).max(Math.PI).step(0.001);
+spotLightFolder.add(spotLight, "penumbra").min(0).max(1).step(0.001);
+spotLightFolder.add(spotLight, "decay").min(0).max(10).step(0.001);
 
 /**
  * Objects
