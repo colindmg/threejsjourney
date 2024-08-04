@@ -1,80 +1,80 @@
-// import GUI from "lil-gui";
+import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import "./style.css";
 
 /**
  * Base
  */
 // Debug
-// const gui = new GUI();
+const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0f0f0f);
-
-// Axes helper
-// const axesHelper = new THREE.AxesHelper();
-// scene.add(axesHelper);
 
 /**
- * Textures
+ * Lights
  */
-const textureLoader = new THREE.TextureLoader();
 
-const matcapTexture = textureLoader.load("/textures/matcaps/3.png");
-matcapTexture.colorSpace = THREE.SRGBColorSpace;
+// Ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+const ambientLightFolder = gui.addFolder("Ambient Light");
+ambientLightFolder.add(ambientLight, "intensity").min(0).max(3).step(0.001);
+
+// Directional light
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9);
+directionalLight.position.set(1, 0.25, 0);
+scene.add(directionalLight);
+const directionalLightFolder = gui.addFolder("Directional Light");
+directionalLightFolder
+  .add(directionalLight, "intensity")
+  .min(0)
+  .max(3)
+  .step(0.001);
+directionalLightFolder
+  .add(directionalLight.position, "x")
+  .min(-5)
+  .max(5)
+  .step(0.001);
+directionalLightFolder
+  .add(directionalLight.position, "y")
+  .min(-5)
+  .max(5)
+  .step(0.001);
+directionalLightFolder
+  .add(directionalLight.position, "z")
+  .min(-5)
+  .max(5)
+  .step(0.001);
 
 /**
- * Fonts
+ * Objects
  */
-const fontLoader = new FontLoader();
+// Material
+const material = new THREE.MeshStandardMaterial();
+material.roughness = 0.4;
 
-fontLoader.load("/fonts/Rosamila_Regular.json", (font) => {
-  const textGeometry = new TextGeometry("Creatives", {
-    font,
-    size: 0.5,
-    depth: 0.075,
-    curveSegments: 8,
-    bevelEnabled: true,
-    bevelThickness: 0.03,
-    bevelSize: 0.02,
-    bevelOffset: 0,
-    bevelSegments: 5,
-  });
+// Objects
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
+sphere.position.x = -1.5;
 
-  textGeometry.center();
+const cube = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), material);
 
-  const material = new THREE.MeshMatcapMaterial();
-  material.matcap = matcapTexture;
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.3, 0.2, 32, 64),
+  material
+);
+torus.position.x = 1.5;
 
-  const text = new THREE.Mesh(textGeometry, material);
-  scene.add(text);
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
+plane.rotation.x = -Math.PI * 0.5;
+plane.position.y = -0.65;
 
-  // Boxs
-  const boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-
-  for (let i = 0; i < 50; i++) {
-    const box = new THREE.Mesh(boxGeometry, material);
-
-    box.position.x = (Math.random() - 0.5) * 10;
-    box.position.y = (Math.random() - 0.5) * 10;
-    box.position.z = (Math.random() - 0.5) * 10;
-
-    box.rotation.x = Math.random() * Math.PI;
-    box.rotation.y = Math.random() * Math.PI;
-
-    const scale = Math.random() * (0.7 - 0.3) + 0.3;
-    box.scale.set(scale, scale, scale);
-
-    scene.add(box);
-  }
-});
+scene.add(sphere, cube, torus, plane);
 
 /**
  * Sizes
@@ -133,6 +133,15 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update objects
+  sphere.rotation.y = 0.1 * elapsedTime;
+  cube.rotation.y = 0.1 * elapsedTime;
+  torus.rotation.y = 0.1 * elapsedTime;
+
+  sphere.rotation.x = 0.15 * elapsedTime;
+  cube.rotation.x = 0.15 * elapsedTime;
+  torus.rotation.x = 0.15 * elapsedTime;
 
   // Update controls
   controls.update();
