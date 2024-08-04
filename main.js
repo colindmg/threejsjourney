@@ -16,6 +16,7 @@ const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f0f0f);
 
 // Axes helper
 // const axesHelper = new THREE.AxesHelper();
