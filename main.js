@@ -1,6 +1,7 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
 import "./style.css";
 
 /**
@@ -99,6 +100,31 @@ spotLightFolder.add(spotLight, "distance").min(0).max(10).step(0.001);
 spotLightFolder.add(spotLight, "angle").min(0).max(Math.PI).step(0.001);
 spotLightFolder.add(spotLight, "penumbra").min(0).max(1).step(0.001);
 spotLightFolder.add(spotLight, "decay").min(0).max(10).step(0.001);
+
+// Helpers
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+  hemisphereLight,
+  0.2
+);
+
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight,
+  0.2
+);
+
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+
+scene.add(
+  hemisphereLightHelper,
+  directionalLightHelper,
+  pointLightHelper,
+  spotLightHelper,
+  rectAreaLightHelper
+);
 
 /**
  * Objects
