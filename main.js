@@ -23,18 +23,18 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 
 // Floor
-const floorAlphaTexture = textureLoader.load("/floor/alpha.jpg");
+const floorAlphaTexture = textureLoader.load("/floor/alpha.webp");
 const floorColorTexture = textureLoader.load(
-  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.jpg"
+  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.webp"
 );
 const floorARMTexture = textureLoader.load(
-  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.jpg"
+  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.webp"
 );
 const floorNormalTexture = textureLoader.load(
-  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.jpg"
+  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.webp"
 );
 const floorDisplacementTexture = textureLoader.load(
-  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.jpg"
+  "./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.webp"
 );
 
 floorColorTexture.colorSpace = THREE.SRGBColorSpace;
@@ -125,14 +125,14 @@ graveARMTexture.repeat.set(0.3, 0.4);
 graveNormalTexture.repeat.set(0.3, 0.4);
 
 // Door
-const doorColorTexture = textureLoader.load("./door/color.jpg");
-const doorAlphaTexture = textureLoader.load("./door/alpha.jpg");
-const doorHeightTexture = textureLoader.load("./door/height.jpg");
-const doorNormalTexture = textureLoader.load("./door/normal.jpg");
-const doorMetalnessTexture = textureLoader.load("./door/metalness.jpg");
-const doorRoughnessTexture = textureLoader.load("./door/roughness.jpg");
+const doorColorTexture = textureLoader.load("./door/color.webp");
+const doorAlphaTexture = textureLoader.load("./door/alpha.webp");
+const doorHeightTexture = textureLoader.load("./door/height.webp");
+const doorNormalTexture = textureLoader.load("./door/normal.webp");
+const doorMetalnessTexture = textureLoader.load("./door/metalness.webp");
+const doorRoughnessTexture = textureLoader.load("./door/roughness.webp");
 const doorAmbientOcclusionTexture = textureLoader.load(
-  "./door/ambientOcclusion.jpg"
+  "./door/ambientOcclusion.webp"
 );
 
 doorColorTexture.colorSpace = THREE.SRGBColorSpace;
