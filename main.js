@@ -22,7 +22,7 @@ const scene = new THREE.Scene();
 // Floor
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(20, 20),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({ color: "#a9c388" })
 );
 
 floor.rotation.x = -Math.PI * 0.5;
@@ -35,7 +35,7 @@ scene.add(house);
 // Walls
 const walls = new THREE.Mesh(
   new THREE.BoxGeometry(4, 2.5, 4),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({ color: "#ac8e82" })
 );
 walls.position.y = 1.25;
 house.add(walls);
@@ -43,7 +43,7 @@ house.add(walls);
 // Roof
 const roof = new THREE.Mesh(
   new THREE.ConeGeometry(3.5, 1.5, 4),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({ color: "#b35f45" })
 );
 roof.position.y = 2.5 + 0.75;
 roof.rotation.y = Math.PI * 0.25;
@@ -52,7 +52,7 @@ house.add(roof);
 // Door
 const door = new THREE.Mesh(
   new THREE.PlaneGeometry(2.2, 2.2),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({ color: "#aa7b7b" })
 );
 door.position.z = 2 + 0.01;
 door.position.y = 1;
@@ -79,6 +79,35 @@ bush4.scale.set(0.15, 0.15, 0.15);
 bush4.position.set(-1, 0.05, 2.6);
 
 house.add(bush1, bush2, bush3, bush4);
+
+// Graves
+const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2);
+const graveMaterial = new THREE.MeshStandardMaterial({ color: "#b2b6b1" });
+
+const graves = new THREE.Group();
+scene.add(graves);
+
+for (let i = 0; i < 30; i++) {
+  // Position
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 3 + Math.random() * 4;
+  const x = Math.sin(angle) * radius;
+  const z = Math.cos(angle) * radius;
+
+  // Mesh
+  const grave = new THREE.Mesh(graveGeometry, graveMaterial);
+  grave.position.x = x;
+  grave.position.y = Math.random() * 0.4;
+  grave.position.z = z;
+
+  // Rotation
+  grave.rotation.z = (Math.random() - 0.5) * 0.4;
+  grave.rotation.y = (Math.random() - 0.5) * 0.4;
+  grave.rotation.x = (Math.random() - 0.5) * 0.4;
+
+  // Add to graves group
+  graves.add(grave);
+}
 
 /**
  * Lights
