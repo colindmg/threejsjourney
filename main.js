@@ -1,6 +1,7 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { Timer } from "three/addons/misc/Timer.js";
+import { Sky } from "three/addons/objects/Sky.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import "./style.css";
 
@@ -301,7 +302,8 @@ const ambientLight = new THREE.AmbientLight("#86cdff", 0.275);
 scene.add(ambientLight);
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight("#86cdff", 1);
+const directionalLight = new THREE.DirectionalLight("#DA4D3F", 1);
+// const directionalLight = new THREE.DirectionalLight("#86cdff", 1);
 directionalLight.position.set(3, 2, -8);
 scene.add(directionalLight);
 
@@ -411,6 +413,24 @@ ghost2.shadow.camera.far = 10;
 ghost3.shadow.mapSize.width = 256;
 ghost3.shadow.mapSize.height = 256;
 ghost3.shadow.camera.far = 10;
+
+/**
+ * Sky
+ */
+const sky = new Sky();
+sky.scale.setScalar(100);
+scene.add(sky);
+sky.material.uniforms["turbidity"].value = 10;
+sky.material.uniforms["rayleigh"].value = 3;
+sky.material.uniforms["mieCoefficient"].value = 0.1;
+sky.material.uniforms["mieDirectionalG"].value = 0.95;
+sky.material.uniforms["sunPosition"].value.set(0.3, -0.038, -0.95);
+
+/**
+ * Fog
+ */
+// scene.fog = new THREE.Fog("#262837", 1, 13);
+scene.fog = new THREE.FogExp2("#06343F", 0.1);
 
 /**
  * Animate
