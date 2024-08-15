@@ -467,6 +467,16 @@ const tick = () => {
     Math.sin(elapsedTime * 2.34) *
     Math.sin(elapsedTime * 3.45);
 
+  // Door Light flickering
+  const doorLightIntensity =
+    Math.sin(elapsedTime * 5) *
+      Math.sin(elapsedTime * 3) *
+      Math.sin(elapsedTime * 7) *
+      Math.sin(elapsedTime * 11) *
+      4 +
+    5;
+  doorLight.intensity = doorLightIntensity;
+
   // Update controls
   controls.update();
 
