@@ -1,4 +1,5 @@
 // import GUI from "lil-gui";
+import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
@@ -193,3 +194,53 @@ const tick = () => {
 };
 
 tick();
+
+// ----------------------------------------------------
+
+/**
+ * Animations GSAP
+ */
+
+const tl = gsap.timeline();
+
+tl.from("#big-title", {
+  filter: "blur(50px)",
+  duration: 0.8,
+  ease: "power2.out",
+});
+
+tl.from(
+  "#p1",
+  {
+    filter: "blur(50px)",
+    duration: 0.8,
+    delay: 0.3,
+    ease: "power2.out",
+  },
+  "<"
+);
+
+tl.from(
+  "#p2",
+  {
+    filter: "blur(50px)",
+    duration: 0.8,
+    delay: 0.3,
+    ease: "power2.out",
+  },
+  "<"
+);
+
+// Animation du clip-path à 100% à droite
+tl.to(
+  ".test",
+  {
+    clipPath: "inset(0% 0% 0% 100%)",
+    duration: 1,
+    ease: "power4.inOut",
+  },
+  "<"
+);
+
+// Démarrer la timeline
+tl.play();
