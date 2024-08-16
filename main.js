@@ -1,13 +1,15 @@
-import GUI from "lil-gui";
+// import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import "./style.css";
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI();
+// const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -22,6 +24,36 @@ scene.background = new THREE.Color(0x121212);
 const textureLoader = new THREE.TextureLoader();
 const particleTexture = textureLoader.load("/textures/particles/8.png");
 
+const matcapTexture = textureLoader.load("/textures/matcaps/3.png");
+matcapTexture.colorSpace = THREE.SRGBColorSpace;
+
+/**
+ * Fonts
+ */
+const fontLoader = new FontLoader();
+
+fontLoader.load("/fonts/Rosamila_Regular.json", (font) => {
+  const textGeometry = new TextGeometry("Creatives", {
+    font,
+    size: 0.5,
+    depth: 0.075,
+    curveSegments: 8,
+    bevelEnabled: true,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
+    bevelOffset: 0,
+    bevelSegments: 5,
+  });
+
+  textGeometry.center();
+
+  const material = new THREE.MeshMatcapMaterial();
+  material.matcap = matcapTexture;
+
+  const text = new THREE.Mesh(textGeometry, material);
+  scene.add(text);
+});
+
 /**
  * Particles
  */
@@ -31,9 +63,13 @@ const particlesGeometry = new THREE.BufferGeometry();
 const count = 1000;
 
 const positions = new Float32Array(count * 3);
+const colors = new Float32Array(count * 3);
 
 for (let i = 0; i < count * 3; i++) {
   positions[i] = (Math.random() - 0.5) * 10;
+
+  // Faire en sorte que les couleurs soit toujours entre 0.9 et 1
+  colors[i] = Math.random() * 0.1 + 0.9;
 }
 
 particlesGeometry.setAttribute(
@@ -41,14 +77,19 @@ particlesGeometry.setAttribute(
   new THREE.BufferAttribute(positions, 3)
 );
 
+particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
   size: 0.1,
   sizeAttenuation: true,
   alphaMap: particleTexture,
   transparent: true,
-  alphaTest: 0.001,
+  // alphaTest: 0.001,
   // depthTest: false,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  vertexColors: true,
 });
 
 // Points
