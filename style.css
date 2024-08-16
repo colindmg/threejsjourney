@@ -22,5 +22,4 @@
 
 .test {
   clip-path: inset(0% 0% 0% 0%);
-  transition: clip-path 1.5s ease-in-out;
 }

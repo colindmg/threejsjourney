@@ -167,8 +167,8 @@ window.addEventListener("mousemove", (event) => {
   mouseY = -(event.clientY / sizes.height) * 2 + 1;
 
   // Amplify the movement effect
-  targetX = mouseX * 0.5;
-  targetY = mouseY * 0.5;
+  targetX = mouseX * 0.75;
+  targetY = mouseY * 0.75;
 });
 
 const clock = new THREE.Clock();
@@ -203,9 +203,36 @@ tick();
 
 const tl = gsap.timeline();
 
+// Progress
+
+const progressText = document.getElementById("progress-number");
+
+gsap.to("#progress", {
+  width: "100%",
+  duration: 1.5,
+  ease: "power4.inOut",
+  onUpdate: () => {
+    // Récupérer la progression actuelle
+    const progress = gsap.getProperty("#progress", "width");
+    // Progress mis à l'entier
+    const percentage = progress.toFixed(0);
+
+    // Mettre à jour le texte avec le pourcentage
+    progressText.textContent = percentage;
+  },
+});
+
+gsap.to("#progress-container", {
+  opacity: 0,
+  duration: 1,
+  delay: 1.5,
+  ease: "power2.out",
+});
+
 tl.from("#big-title", {
   filter: "blur(50px)",
   duration: 0.8,
+  delay: 1,
   ease: "power2.out",
 });
 
@@ -236,7 +263,8 @@ tl.to(
   ".test",
   {
     clipPath: "inset(0% 0% 0% 100%)",
-    duration: 1,
+    duration: 1.5,
+    delay: 0.3,
     ease: "power4.inOut",
   },
   "<"
