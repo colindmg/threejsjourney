@@ -35,7 +35,7 @@ const fontLoader = new FontLoader();
 fontLoader.load("/fonts/Rosamila_Regular.json", (font) => {
   const textGeometry = new TextGeometry("Creatives", {
     font,
-    size: 0.5,
+    size: 0.8,
     depth: 0.075,
     curveSegments: 8,
     bevelEnabled: true,
