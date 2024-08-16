@@ -1,8 +1,3 @@
-@font-face {
-  font-family: "Rosamila";
-  src: url("/fonts/Rosamila_Regular.ttf");
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -14,12 +9,4 @@
   top: 0;
   left: 0;
   outline: none;
-}
-
-.rosamila {
-  font-family: "Rosamila", sans-serif;
-}
-
-.test {
-  clip-path: inset(0% 0% 0% 0%);
 }

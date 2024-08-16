@@ -1,101 +1,63 @@
-// import GUI from "lil-gui";
-import gsap from "gsap";
+import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import "./style.css";
 
 /**
  * Base
  */
 // Debug
-// const gui = new GUI();
+const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x171717);
 
 /**
- * Textures
+ * Galaxy
  */
-const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load("/textures/particles/8.png");
+const parameters = {};
+parameters.count = 1000;
+parameters.size = 0.02;
 
-const matcapTexture = textureLoader.load("/textures/matcaps/3.png");
-matcapTexture.colorSpace = THREE.SRGBColorSpace;
+const generateGalaxy = () => {
+  /**
+   * Geometry
+   */
+  const geometry = new THREE.BufferGeometry();
 
-/**
- * Fonts
- */
-const fontLoader = new FontLoader();
+  const positions = new Float32Array(parameters.count * 3);
 
-fontLoader.load("/fonts/Rosamila_Regular.json", (font) => {
-  const textGeometry = new TextGeometry("Creatives", {
-    font,
-    size: 0.8,
-    depth: 0.075,
-    curveSegments: 8,
-    bevelEnabled: true,
-    bevelThickness: 0.03,
-    bevelSize: 0.02,
-    bevelOffset: 0,
-    bevelSegments: 5,
+  for (let i = 0; i < parameters.count; i++) {
+    const i3 = i * 3;
+
+    positions[i3 + 0] = Math.random() - 0.5;
+    positions[i3 + 1] = Math.random() - 0.5;
+    positions[i3 + 2] = Math.random() - 0.5;
+  }
+
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+  /**
+   * Material
+   */
+  const material = new THREE.PointsMaterial({
+    size: parameters.size,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
   });
 
-  textGeometry.center();
+  /**
+   * Points
+   */
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+};
 
-  const material = new THREE.MeshMatcapMaterial();
-  material.matcap = matcapTexture;
-
-  const text = new THREE.Mesh(textGeometry, material);
-  scene.add(text);
-});
-
-/**
- * Particles
- */
-
-// Geometry
-const particlesGeometry = new THREE.BufferGeometry();
-const count = 1000;
-
-const positions = new Float32Array(count * 3);
-const colors = new Float32Array(count * 3);
-
-for (let i = 0; i < count * 3; i++) {
-  positions[i] = (Math.random() - 0.5) * 10;
-
-  // Faire en sorte que les couleurs soit toujours entre 0.9 et 1
-  colors[i] = Math.random() * 0.1 + 0.9;
-}
-
-particlesGeometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(positions, 3)
-);
-
-particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-// Material
-const particlesMaterial = new THREE.PointsMaterial({
-  size: 0.1,
-  sizeAttenuation: true,
-  alphaMap: particleTexture,
-  transparent: true,
-  // alphaTest: 0.001,
-  // depthTest: false,
-  depthWrite: false,
-  blending: THREE.AdditiveBlending,
-  vertexColors: true,
-});
-
-// Points
-const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-scene.add(particles);
+generateGalaxy();
 
 /**
  * Sizes
@@ -129,6 +91,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
+camera.position.x = 3;
+camera.position.y = 3;
 camera.position.z = 3;
 scene.add(camera);
 
@@ -146,42 +110,12 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
- * Fog
- */
-scene.fog = new THREE.FogExp2("#171717", 0.2);
-
-/**
  * Animate
  */
-
-// Variables to store mouse position and camera target position
-let mouseX = 0;
-let mouseY = 0;
-let targetX = 0;
-let targetY = 0;
-
-// Add event listener for mouse movement
-window.addEventListener("mousemove", (event) => {
-  // Calculate mouse position in normalized device coordinates (-1 to +1)
-  mouseX = (event.clientX / sizes.width) * 2 - 1;
-  mouseY = -(event.clientY / sizes.height) * 2 + 1;
-
-  // Amplify the movement effect
-  targetX = mouseX * 0.75;
-  targetY = mouseY * 0.75;
-});
-
 const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
-
-  // Apply easing using lerp
-  camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.025);
-  camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetY, 0.025);
-
-  // Make the camera always look at the origin (0, 0, 0)
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // Update controls
   controls.update();
@@ -194,81 +128,3 @@ const tick = () => {
 };
 
 tick();
-
-// ----------------------------------------------------
-
-/**
- * Animations GSAP
- */
-
-const tl = gsap.timeline();
-
-// Progress
-
-const progressText = document.getElementById("progress-number");
-
-gsap.to("#progress", {
-  width: "100%",
-  duration: 1.5,
-  ease: "power4.inOut",
-  onUpdate: () => {
-    // Récupérer la progression actuelle
-    const progress = gsap.getProperty("#progress", "width");
-    // Progress mis à l'entier
-    const percentage = progress.toFixed(0);
-
-    // Mettre à jour le texte avec le pourcentage
-    progressText.textContent = percentage;
-  },
-});
-
-gsap.to("#progress-container", {
-  opacity: 0,
-  duration: 1,
-  delay: 1.5,
-  ease: "power2.out",
-});
-
-tl.from("#big-title", {
-  filter: "blur(50px)",
-  duration: 0.8,
-  delay: 1,
-  ease: "power2.out",
-});
-
-tl.from(
-  "#p1",
-  {
-    filter: "blur(50px)",
-    duration: 0.8,
-    delay: 0.3,
-    ease: "power2.out",
-  },
-  "<"
-);
-
-tl.from(
-  "#p2",
-  {
-    filter: "blur(50px)",
-    duration: 0.8,
-    delay: 0.3,
-    ease: "power2.out",
-  },
-  "<"
-);
-
-// Animation du clip-path à 100% à droite
-tl.to(
-  ".test",
-  {
-    clipPath: "inset(0% 0% 0% 100%)",
-    duration: 1.5,
-    delay: 0.3,
-    ease: "power4.inOut",
-  },
-  "<"
-);
-
-// Démarrer la timeline
-tl.play();
