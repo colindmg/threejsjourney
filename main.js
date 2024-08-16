@@ -147,16 +147,40 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Fog
  */
-// scene.fog = new THREE.Fog("#262837", 1, 13);
 scene.fog = new THREE.FogExp2("#171717", 0.2);
 
 /**
  * Animate
  */
+
+// Variables to store mouse position and camera target position
+let mouseX = 0;
+let mouseY = 0;
+let targetX = 0;
+let targetY = 0;
+
+// Add event listener for mouse movement
+window.addEventListener("mousemove", (event) => {
+  // Calculate mouse position in normalized device coordinates (-1 to +1)
+  mouseX = (event.clientX / sizes.width) * 2 - 1;
+  mouseY = -(event.clientY / sizes.height) * 2 + 1;
+
+  // Amplify the movement effect
+  targetX = mouseX * 0.5;
+  targetY = mouseY * 0.5;
+});
+
 const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Apply easing using lerp
+  camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.025);
+  camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetY, 0.025);
+
+  // Make the camera always look at the origin (0, 0, 0)
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // Update controls
   controls.update();
