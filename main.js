@@ -1,3 +1,4 @@
+import gsap from "gsap";
 import GUI from "lil-gui";
 import * as THREE from "three";
 // import "./style.css";
@@ -152,9 +153,24 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Scroll
  */
 let scrollY = window.scrollY;
+let currentSection = 0;
 
 window.addEventListener("scroll", () => {
   scrollY = window.scrollY;
+
+  const newSection = Math.round(scrollY / sizes.height);
+
+  if (currentSection !== newSection) {
+    currentSection = newSection;
+
+    gsap.to(sectionMeshes[newSection].rotation, {
+      x: "+=6",
+      y: "+=3",
+      z: "+=1.5",
+      duration: 1.5,
+      ease: "power2.inOut",
+    });
+  }
 });
 
 /**
@@ -193,8 +209,8 @@ const tick = () => {
 
   // Update objects
   sectionMeshes.forEach((mesh, index) => {
-    mesh.rotation.x = elapsedTime * 0.1;
-    mesh.rotation.y = elapsedTime * 0.12;
+    mesh.rotation.x += deltaTime * 0.1;
+    mesh.rotation.y += deltaTime * 0.12;
   });
 
   // Render
