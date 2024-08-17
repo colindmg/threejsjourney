@@ -17,6 +17,15 @@ debugObject.createSphere = () => {
 };
 gui.add(debugObject, "createSphere");
 
+debugObject.createBox = () => {
+  createBox(Math.random(), Math.random(), Math.random(), {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObject, "createBox");
+
 /**
  * Base
  */
@@ -47,6 +56,8 @@ const environmentMapTexture = cubeTextureLoader.load([
 
 // World
 const world = new CANNON.World();
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
 world.gravity.set(0, -9.82, 0);
 
 // Materials
@@ -179,6 +190,38 @@ const createSphere = (radius, position) => {
 
   // Cannon.js
   const shape = new CANNON.Sphere(radius);
+  const body = new CANNON.Body({
+    mass: 1,
+    position: new CANNON.Vec3().copy(position),
+    shape,
+    material: defaultMaterial,
+  });
+  world.addBody(body);
+
+  // Save in objectsToUpdate
+  objectsToUpdate.push({ mesh, body });
+};
+
+// Create a box
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const boxMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
+
+const createBox = (width, height, depth, position) => {
+  // Three.js
+  const mesh = new THREE.Mesh(boxGeometry, boxMaterial);
+  mesh.scale.set(width, height, depth);
+  mesh.castShadow = true;
+  mesh.position.copy(position);
+  scene.add(mesh);
+
+  // Cannon.js
+  const shape = new CANNON.Box(
+    new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
+  );
   const body = new CANNON.Body({
     mass: 1,
     position: new CANNON.Vec3().copy(position),
