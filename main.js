@@ -19,15 +19,15 @@ const scene = new THREE.Scene();
  * Galaxy
  */
 const parameters = {};
-parameters.count = 100000;
-parameters.size = 0.01;
+parameters.count = 350000;
+parameters.size = 0.009;
 parameters.radius = 5;
-parameters.branches = 3;
+parameters.branches = 11;
 parameters.spin = 1;
-parameters.randomness = 0.2;
-parameters.randomnessPower = 3;
-parameters.insideColor = "#ff6030";
-parameters.outsideColor = "#1b3984";
+parameters.randomness = 2;
+parameters.randomnessPower = 8.4;
+parameters.insideColor = "#822eff";
+parameters.outsideColor = "#1188E4";
 
 let geometry = null;
 let material = null;
@@ -67,7 +67,8 @@ const generateGalaxy = () => {
       parameters.spin *
       Math.sin(radius) *
       Math.cos(radius) *
-      Math.sin(radius);
+      Math.sin(radius) *
+      Math.cos(radius);
 
     const randomX =
       Math.pow(Math.random(), parameters.randomnessPower) *
@@ -219,6 +220,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update points
+  points.rotation.y = elapsedTime * 0.1;
 
   // Update controls
   controls.update();
