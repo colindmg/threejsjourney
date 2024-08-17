@@ -92,6 +92,10 @@ window.addEventListener("resize", () => {
 /**
  * Camera
  */
+// Group
+const cameraGroup = new THREE.Group();
+scene.add(cameraGroup);
+
 // Base camera
 const camera = new THREE.PerspectiveCamera(
   35,
@@ -100,7 +104,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 camera.position.z = 6;
-scene.add(camera);
+cameraGroup.add(camera);
 
 /**
  * Renderer
@@ -129,8 +133,8 @@ cursor.x = 0;
 cursor.y = 0;
 
 window.addEventListener("mousemove", (e) => {
-  cursor.x = e.clientX;
-  cursor.y = e.clientY;
+  cursor.x = e.clientX / sizes.width - 0.5;
+  cursor.y = e.clientY / sizes.height - 0.5;
 });
 
 /**
@@ -143,6 +147,12 @@ const tick = () => {
 
   // Update camera
   camera.position.y = (-scrollY / sizes.height) * objectsDistance;
+
+  const parallaxX = cursor.x;
+  const parallaxY = -cursor.y;
+
+  cameraGroup.position.x = parallaxX;
+  cameraGroup.position.y = parallaxY;
 
   // Update objects
   sectionMeshes.forEach((mesh, index) => {
