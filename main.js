@@ -62,6 +62,10 @@ const sphereBody = new CANNON.Body({
   shape: sphereShape,
   material: defaultMaterial,
 });
+sphereBody.applyLocalForce(
+  new CANNON.Vec3(150, 0, 0),
+  new CANNON.Vec3(0, 0, 0)
+);
 world.addBody(sphereBody);
 
 // Floor
@@ -183,6 +187,9 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
+
+  // Update sphere body
+  sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position);
 
   // Update physics world
   world.step(1 / 60, deltaTime, 3);
