@@ -313,10 +313,9 @@ window.addEventListener("click", (event) => {
     const objectData = objectsToUpdate.find(
       (obj) => obj.mesh === intersectedObject
     );
-    if (objectData) {
-      // console.log("Clicked on : ", objectData);
+    if (objectData && selectedObject === null) {
       selectedObject = objectData;
-      showMovieDetails(objectData);
+      showMovieDetails(selectedObject);
     }
   }
 });
@@ -370,4 +369,7 @@ document.getElementById("close-overlay").addEventListener("click", () => {
   const overlay = document.getElementById("details-overlay");
   overlay.style.opacity = "0";
   overlay.style.pointerEvents = "none";
+  setTimeout(() => {
+    selectedObject = null;
+  }, 500);
 });
