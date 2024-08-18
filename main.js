@@ -93,7 +93,7 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
   defaultMaterial,
   {
     friction: 0.1,
-    restitution: 0.3,
+    restitution: 0.2,
   }
 );
 world.addContactMaterial(defaultContactMaterial);
@@ -215,12 +215,6 @@ const boxMaterial = new THREE.MeshStandardMaterial({
   envMap: environmentMapTexture,
   color: 0x171717,
 });
-const boxCoverMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.5,
-  roughness: 0.1,
-  envMap: environmentMapTexture,
-  map: coverTexture,
-});
 
 const boxMaterials = [
   boxMaterial,
@@ -266,7 +260,14 @@ const createBox = (width, height, depth, position) => {
   });
 
   // Save in objectsToUpdate
-  objectsToUpdate.push({ mesh, body });
+  objectsToUpdate.push({
+    mesh,
+    body,
+    title: movies[objectsToUpdate.length % movies.length].title,
+    year: movies[objectsToUpdate.length % movies.length].year,
+    director: movies[objectsToUpdate.length % movies.length].director,
+    coverImage: movies[objectsToUpdate.length % movies.length].coverImage,
+  });
 };
 
 /**
@@ -300,3 +301,35 @@ const tick = () => {
 };
 
 tick();
+
+/**
+ * Raycaster et click event
+ */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener("click", (event) => {
+  // Convertir les coordonnées de la souris en espace normalisé
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Mettre à jour le raycaster avec la position actuelle de la caméra et les coordonnées de la souris
+  raycaster.setFromCamera(mouse, camera);
+
+  // Calculer les objets qui intersectent avec le rayon
+  const intersects = raycaster.intersectObjects(
+    objectsToUpdate.map((obj) => obj.mesh)
+  );
+
+  if (intersects.length > 0) {
+    const intersectedObject = intersects[0].object;
+
+    // Trouver l'objet associé
+    const objectData = objectsToUpdate.find(
+      (obj) => obj.mesh === intersectedObject
+    );
+    if (objectData) {
+      console.log("Clicked on : ", objectData);
+    }
+  }
+});
