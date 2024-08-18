@@ -2,27 +2,14 @@ import * as CANNON from "cannon-es";
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import movies from "./movies";
 
 /**
  * Debug
  */
 const gui = new GUI();
 const debugObject = {};
-debugObject.createSphere = () => {
-  createSphere(Math.random() * 0.5, {
-    x: (Math.random() - 0.5) * 3,
-    y: 3,
-    z: (Math.random() - 0.5) * 3,
-  });
-};
-gui.add(debugObject, "createSphere");
-
 debugObject.createBox = () => {
-  // createBox(Math.random(), Math.random(), Math.random(), {
-  //   x: (Math.random() - 0.5) * 3,
-  //   y: 3,
-  //   z: (Math.random() - 0.5) * 3,
-  // });
   createBox(0.45, 0.7, 0.07, {
     x: (Math.random() - 0.5) * 2,
     y: 3,
@@ -219,47 +206,14 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  */
 const objectsToUpdate = [];
 
-// Create a sphere
-const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
-const sphereMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.3,
-  roughness: 0.4,
-  envMap: environmentMapTexture,
-});
-
-const createSphere = (radius, position) => {
-  // Three.js
-  const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  mesh.scale.set(radius, radius, radius);
-  mesh.castShadow = true;
-  mesh.position.copy(position);
-  scene.add(mesh);
-
-  // Cannon.js
-  const shape = new CANNON.Sphere(radius);
-  const body = new CANNON.Body({
-    mass: 1,
-    position: new CANNON.Vec3().copy(position),
-    shape,
-    material: defaultMaterial,
-  });
-  world.addBody(body);
-  body.addEventListener("collide", (event) => {
-    playHitSound(event);
-  });
-
-  // Save in objectsToUpdate
-  objectsToUpdate.push({ mesh, body });
-};
-
 // Create a box
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+
 const boxMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.5,
   roughness: 0.4,
   envMap: environmentMapTexture,
   color: 0x171717,
-  // map: coverTexture,
 });
 const boxCoverMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.5,
@@ -273,13 +227,24 @@ const boxMaterials = [
   boxMaterial,
   boxMaterial,
   boxMaterial,
-  boxCoverMaterial,
-  boxCoverMaterial,
+  // boxCoverMaterial,
+  // boxCoverMaterial,
 ];
 
 const createBox = (width, height, depth, position) => {
   // Three.js
-  const mesh = new THREE.Mesh(boxGeometry, boxMaterials);
+  const boxCoverMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.5,
+    roughness: 0.1,
+    envMap: environmentMapTexture,
+    map: movies[objectsToUpdate.length % movies.length].coverTexture,
+  });
+
+  const mesh = new THREE.Mesh(boxGeometry, [
+    ...boxMaterials,
+    boxCoverMaterial,
+    boxCoverMaterial,
+  ]);
   mesh.scale.set(width, height, depth);
   mesh.castShadow = true;
   mesh.position.copy(position);
