@@ -18,10 +18,15 @@ debugObject.createSphere = () => {
 gui.add(debugObject, "createSphere");
 
 debugObject.createBox = () => {
-  createBox(Math.random(), Math.random(), Math.random(), {
-    x: (Math.random() - 0.5) * 3,
+  // createBox(Math.random(), Math.random(), Math.random(), {
+  //   x: (Math.random() - 0.5) * 3,
+  //   y: 3,
+  //   z: (Math.random() - 0.5) * 3,
+  // });
+  createBox(0.45, 0.7, 0.07, {
+    x: (Math.random() - 0.5) * 2,
     y: 3,
-    z: (Math.random() - 0.5) * 3,
+    z: (Math.random() - 0.5) * 2,
   });
 };
 gui.add(debugObject, "createBox");
@@ -75,6 +80,14 @@ const environmentMapTexture = cubeTextureLoader.load([
   "/textures/environmentMaps/0/nz.png",
 ]);
 
+const floorAlphamapTexture = textureLoader.load("/textures/floor/alpha.webp");
+
+// Test texture de cover de film
+const coverTexture = textureLoader.load(
+  "/textures/movieCovers/interstellar.webp"
+);
+coverTexture.colorSpace = THREE.SRGBColorSpace;
+
 /**
  * Physics
  */
@@ -93,7 +106,7 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
   defaultMaterial,
   {
     friction: 0.1,
-    restitution: 0.7,
+    restitution: 0.3,
   }
 );
 world.addContactMaterial(defaultContactMaterial);
@@ -109,14 +122,18 @@ floorBody.material = defaultMaterial;
 world.addBody(floorBody);
 
 /**
- * Floor
+ * Three.js
  */
+
+// Floor
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
   new THREE.MeshStandardMaterial({
-    color: "#777777",
+    color: "#121212",
     metalness: 0.3,
     roughness: 0.4,
+    transparent: true,
+    alphaMap: floorAlphamapTexture,
     envMap: environmentMapTexture,
     envMapIntensity: 0.5,
   })
@@ -180,6 +197,11 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.minPolarAngle = Math.PI * 0.15;
+controls.maxPolarAngle = Math.PI * 0.45;
+controls.maxDistance = 8;
+controls.minDistance = 3;
+controls.enablePan = false;
 
 /**
  * Renderer
@@ -233,14 +255,31 @@ const createSphere = (radius, position) => {
 // Create a box
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 const boxMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.3,
+  metalness: 0.5,
   roughness: 0.4,
   envMap: environmentMapTexture,
+  color: 0x171717,
+  // map: coverTexture,
 });
+const boxCoverMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.5,
+  roughness: 0.1,
+  envMap: environmentMapTexture,
+  map: coverTexture,
+});
+
+const boxMaterials = [
+  boxMaterial,
+  boxMaterial,
+  boxMaterial,
+  boxMaterial,
+  boxCoverMaterial,
+  boxCoverMaterial,
+];
 
 const createBox = (width, height, depth, position) => {
   // Three.js
-  const mesh = new THREE.Mesh(boxGeometry, boxMaterial);
+  const mesh = new THREE.Mesh(boxGeometry, boxMaterials);
   mesh.scale.set(width, height, depth);
   mesh.castShadow = true;
   mesh.position.copy(position);
