@@ -11,6 +11,8 @@
     <canvas class="webgl"></canvas>
 
     <!-- CONTENU HTML -->
+
+    <!-- Overlay de la page principale -->
     <div class="fixed z-10 w-screen h-screen top-0 left-0 pointer-events-none">
       <!-- Logo et titre de la page -->
       <div class="absolute top-16 left-20 flex items-center gap-2">
@@ -39,6 +41,38 @@
           <img src="/img/drop-icon.svg" alt="Drop movie icon" />
           Drop
         </button>
+      </div>
+    </div>
+
+    <!-- Overlay de la page de détails -->
+    <div
+      id="details-overlay"
+      class="fixed z-10 w-screen h-screen top-0 left-0 pointer-events-none opacity-0 transition-opacity duration-300 bg-black/50 flex items-center justify-center backdrop-blur-sm"
+    >
+      <div
+        id="movie-details"
+        class="bg-[#171717] p-6 rounded-lg text-white flex gap-10"
+      >
+        <img
+          id="movie-cover"
+          src=""
+          alt="Movie Cover"
+          class="w-full rounded-md max-h-[450px]"
+        />
+        <div class="min-w-[300px]">
+          <h2
+            id="movie-title"
+            class="text-3xl font-semibold mb-3 tracking-wide"
+          ></h2>
+          <p id="movie-year" class="text-sm mb-4"></p>
+          <p id="movie-director" class="text-sm mb-4"></p>
+          <button
+            id="close-overlay"
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
 

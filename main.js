@@ -316,6 +316,7 @@ window.addEventListener("click", (event) => {
     if (objectData) {
       // console.log("Clicked on : ", objectData);
       selectedObject = objectData;
+      showMovieDetails(objectData);
     }
   }
 });
@@ -336,10 +337,37 @@ dropMovieButton.addEventListener("click", () => {
 
 resetMoviesButton.addEventListener("click", () => {
   for (const object of objectsToUpdate) {
-    object.body.removeEventListener("collide", playHitSound);
-    world.removeBody(object.body);
-    scene.remove(object.mesh);
+    setTimeout(() => {
+      object.body.removeEventListener("collide", playHitSound);
+      world.removeBody(object.body);
+      scene.remove(object.mesh);
+    }, objectsToUpdate.indexOf(object) * 50);
   }
 
   objectsToUpdate.splice(0, objectsToUpdate.length);
+});
+
+/**
+ * Movie details
+ */
+function showMovieDetails(movie) {
+  // Mettre à jour le contenu de l'overlay avec les informations du film
+  document.getElementById("movie-title").textContent = movie.title;
+  document.getElementById("movie-year").textContent = `Year: ${movie.year}`;
+  document.getElementById(
+    "movie-director"
+  ).textContent = `Director: ${movie.director}`;
+  document.getElementById("movie-cover").src = movie.coverImage;
+
+  // Afficher l'overlay
+  const overlay = document.getElementById("details-overlay");
+  overlay.style.opacity = "1";
+  overlay.style.pointerEvents = "auto";
+}
+
+// Fermer l'overlay en cliquant sur le bouton de fermeture
+document.getElementById("close-overlay").addEventListener("click", () => {
+  const overlay = document.getElementById("details-overlay");
+  overlay.style.opacity = "0";
+  overlay.style.pointerEvents = "none";
 });
