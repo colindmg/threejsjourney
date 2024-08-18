@@ -5,9 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>III - ADVANCED TECHNIQUES</title>
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <canvas class="webgl"></canvas>
+
+    <!-- CONTENU HTML -->
+    <div class="fixed z-10 w-screen h-screen top-0 left-0 pointer-events-none">
+      <!-- Logo et titre de la page -->
+      <div class="absolute top-16 left-20 flex items-center gap-2">
+        <img src="/img/logo.webp" alt="Logo" class="w-20" />
+        <div class="flex flex-col text-white">
+          <h2 class="font-light">FOR YOU</h2>
+          <h1 class="font-semibold text-3xl tracking-wide">Movies</h1>
+        </div>
+      </div>
+
+      <!-- Boutons de la page principale -->
+      <div
+        class="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 font-medium text-lg tracking-wider"
+      >
+        <button
+          id="reset-movies"
+          class="px-6 py-1.5 rounded-sm bg-white/20 text-white cursor-pointer pointer-events-auto backdrop-blur-sm hover:opacity-90 flex items-center gap-3"
+        >
+          <img src="/img/reset-icon.svg" alt="Reset scene icon" />
+          Reset
+        </button>
+        <button
+          id="drop-movie"
+          class="px-6 py-1 rounded-sm bg-white text-[#0C0C0C] cursor-pointer pointer-events-auto hover:opacity-90 flex items-center gap-2.5"
+        >
+          <img src="/img/drop-icon.svg" alt="Drop movie icon" />
+          Drop
+        </button>
+      </div>
+    </div>
 
     <script type="module" src="./main.js"></script>
   </body>

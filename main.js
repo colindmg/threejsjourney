@@ -8,26 +8,7 @@ import movies from "./movies";
  * Debug
  */
 const gui = new GUI();
-const debugObject = {};
-debugObject.createBox = () => {
-  createBox(0.45, 0.7, 0.07, {
-    x: (Math.random() - 0.5) * 2,
-    y: 3,
-    z: (Math.random() - 0.5) * 2,
-  });
-};
-gui.add(debugObject, "createBox");
-
-debugObject.reset = () => {
-  for (const object of objectsToUpdate) {
-    object.body.removeEventListener("collide", playHitSound);
-    world.removeBody(object.body);
-    scene.remove(object.mesh);
-  }
-
-  objectsToUpdate.splice(0, objectsToUpdate.length);
-};
-gui.add(debugObject, "reset");
+gui.hide();
 
 /**
  * Base
@@ -37,6 +18,7 @@ const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
+scene.background = new THREE.Color("#0C0C0C");
 
 /**
  * Sound
@@ -178,7 +160,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(-3, 3, 3);
+camera.position.set(-3, 3, -3);
 scene.add(camera);
 
 // Controls
@@ -186,7 +168,7 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.minPolarAngle = Math.PI * 0.15;
 controls.maxPolarAngle = Math.PI * 0.45;
-controls.maxDistance = 8;
+controls.maxDistance = 6;
 controls.minDistance = 3;
 controls.enablePan = false;
 
@@ -225,7 +207,7 @@ const boxMaterials = [
   // boxCoverMaterial,
 ];
 
-const createBox = (width, height, depth, position) => {
+const createBox = (width, height, depth, position, rotation) => {
   // Three.js
   const boxCoverMaterial = new THREE.MeshStandardMaterial({
     metalness: 0.5,
@@ -305,6 +287,9 @@ tick();
 /**
  * Raycaster et click event
  */
+
+let selectedObject = null;
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -329,7 +314,32 @@ window.addEventListener("click", (event) => {
       (obj) => obj.mesh === intersectedObject
     );
     if (objectData) {
-      console.log("Clicked on : ", objectData);
+      // console.log("Clicked on : ", objectData);
+      selectedObject = objectData;
     }
   }
+});
+
+/**
+ * GUI
+ */
+const dropMovieButton = document.getElementById("drop-movie");
+const resetMoviesButton = document.getElementById("reset-movies");
+
+dropMovieButton.addEventListener("click", () => {
+  createBox(0.45, 0.7, 0.07, {
+    x: (Math.random() - 0.5) * 2,
+    y: 3,
+    z: (Math.random() - 0.5) * 2,
+  });
+});
+
+resetMoviesButton.addEventListener("click", () => {
+  for (const object of objectsToUpdate) {
+    object.body.removeEventListener("collide", playHitSound);
+    world.removeBody(object.body);
+    scene.remove(object.mesh);
+  }
+
+  objectsToUpdate.splice(0, objectsToUpdate.length);
 });
