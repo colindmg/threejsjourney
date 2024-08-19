@@ -1,8 +1,6 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 /**
  * Base
@@ -17,72 +15,35 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
- * Animation
+ * Objects
  */
-let mixer = null;
+const object1 = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 16, 16),
+  new THREE.MeshBasicMaterial({ color: "#ff0000" })
+);
+object1.position.x = -2;
 
-/**
- * Models
- */
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("/draco/");
-
-const gltfLoader = new GLTFLoader();
-gltfLoader.setDRACOLoader(dracoLoader);
-
-gltfLoader.load(
-  // "/models/Duck/glTF-Binary/Duck.glb",
-  // "/models/FlightHelmet/glTF/FlightHelmet.gltf",
-  // "/models/Duck/glTF-Draco/Duck.gltf",
-  "/models/Fox/glTF/Fox.gltf",
-  (gltf) => {
-    mixer = new THREE.AnimationMixer(gltf.scene);
-    const action = mixer.clipAction(gltf.animations[2]);
-    action.play();
-
-    gltf.scene.scale.set(0.025, 0.025, 0.025);
-    scene.add(gltf.scene);
-
-    // const children = [...gltf.scene.children];
-    // for (const child of children) {
-    //   child.castShadow = true;
-    //   child.receiveShadow = true;
-    //   scene.add(child);
-    // }
-  }
+const object2 = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 16, 16),
+  new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
 
-/**
- * Floor
- */
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshStandardMaterial({
-    color: "#444444",
-    metalness: 0,
-    roughness: 0.5,
-  })
+const object3 = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 16, 16),
+  new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
-floor.receiveShadow = true;
-floor.rotation.x = -Math.PI * 0.5;
-scene.add(floor);
+object3.position.x = 2;
+
+scene.add(object1, object2, object3);
 
 /**
- * Lights
+ * Raycaster
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 2.4);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.far = 15;
-directionalLight.shadow.camera.left = -7;
-directionalLight.shadow.camera.top = 7;
-directionalLight.shadow.camera.right = 7;
-directionalLight.shadow.camera.bottom = -7;
-directionalLight.position.set(5, 5, 5);
-scene.add(directionalLight);
+const raycaster = new THREE.Raycaster();
+const rayOrigin = new THREE.Vector3(-3, 0, 0);
+const rayDirection = new THREE.Vector3(10, 0, 0);
+rayDirection.normalize();
+raycaster.set(rayOrigin, rayDirection);
 
 /**
  * Sizes
@@ -116,12 +77,11 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(2, 2, 2);
+camera.position.z = 3;
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 0.75, 0);
 controls.enableDamping = true;
 
 /**
@@ -130,8 +90,6 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -139,17 +97,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Animate
  */
 const clock = new THREE.Clock();
-let previousTime = 0;
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - previousTime;
-  previousTime = elapsedTime;
-
-  // Update mixer
-  if (mixer) {
-    mixer.update(deltaTime);
-  }
 
   // Update controls
   controls.update();
