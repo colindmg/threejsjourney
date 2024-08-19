@@ -1,4 +1,5 @@
 import * as CANNON from "cannon-es";
+import gsap from "gsap";
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -291,41 +292,6 @@ tick();
  * Raycaster et click event
  */
 
-// let selectedObject = null;
-
-// const raycaster = new THREE.Raycaster();
-// const mouse = new THREE.Vector2();
-
-// window.addEventListener("click", (event) => {
-//   // Convertir les coordonnées de la souris en espace normalisé
-//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-//   // Mettre à jour le raycaster avec la position actuelle de la caméra et les coordonnées de la souris
-//   raycaster.setFromCamera(mouse, camera);
-
-//   // Calculer les objets qui intersectent avec le rayon
-//   const intersects = raycaster.intersectObjects(
-//     objectsToUpdate.map((obj) => obj.mesh)
-//   );
-
-//   if (intersects.length > 0) {
-//     const intersectedObject = intersects[0].object;
-
-//     // Trouver l'objet associé
-//     const objectData = objectsToUpdate.find(
-//       (obj) => obj.mesh === intersectedObject
-//     );
-//     if (objectData && selectedObject === null) {
-//       selectedObject = objectData;
-//       // if (!objectData.summary) {
-//       //   selectedObject.summary = null;
-//       // }
-//       showMovieDetails(selectedObject);
-//     }
-//   }
-// });
-
 let selectedObject = null;
 let clickedObject = null;
 let isDragging = false;
@@ -423,8 +389,28 @@ function showMovieDetails(movie) {
   document.getElementById("movie-year").textContent = movie.year;
   document.getElementById("movie-director").textContent = movie.director;
   document.getElementById("movie-cover").src = movie.coverImage;
+  // if (movie.summary) {
+  //   document.getElementById("movie-summary").textContent = movie.summary;
+  // }
   if (movie.summary) {
-    document.getElementById("movie-summary").textContent = movie.summary;
+    const summaryElement = document.getElementById("movie-summary");
+
+    // Diviser le résumé en mots et les entourer avec des span
+    const words = movie.summary.split(" ").map((word) => {
+      return `<span style="opacity: 0; filter: blur(5px); display: inline-block;">${word}</span>`;
+    });
+
+    // Mettre à jour le contenu du résumé
+    summaryElement.innerHTML = words.join(" ");
+
+    // Animer chaque mot séquentiellement avec GSAP
+    gsap.to("#movie-summary span", {
+      opacity: 1,
+      filter: "blur(0px)",
+      stagger: 0.06, // Intervalle de 0.05 secondes entre chaque animation de mot
+      duration: 0.5, // Durée de chaque animation de mot
+      ease: "power2.out",
+    });
   }
 
   // Afficher l'overlay
