@@ -285,43 +285,105 @@ const tick = () => {
 
 tick();
 
+// EVENTS -------------------------------------------------
+
 /**
  * Raycaster et click event
  */
 
+// let selectedObject = null;
+
+// const raycaster = new THREE.Raycaster();
+// const mouse = new THREE.Vector2();
+
+// window.addEventListener("click", (event) => {
+//   // Convertir les coordonnées de la souris en espace normalisé
+//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+//   // Mettre à jour le raycaster avec la position actuelle de la caméra et les coordonnées de la souris
+//   raycaster.setFromCamera(mouse, camera);
+
+//   // Calculer les objets qui intersectent avec le rayon
+//   const intersects = raycaster.intersectObjects(
+//     objectsToUpdate.map((obj) => obj.mesh)
+//   );
+
+//   if (intersects.length > 0) {
+//     const intersectedObject = intersects[0].object;
+
+//     // Trouver l'objet associé
+//     const objectData = objectsToUpdate.find(
+//       (obj) => obj.mesh === intersectedObject
+//     );
+//     if (objectData && selectedObject === null) {
+//       selectedObject = objectData;
+//       // if (!objectData.summary) {
+//       //   selectedObject.summary = null;
+//       // }
+//       showMovieDetails(selectedObject);
+//     }
+//   }
+// });
+
 let selectedObject = null;
+let clickedObject = null;
+let isDragging = false;
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-window.addEventListener("click", (event) => {
-  // Convertir les coordonnées de la souris en espace normalisé
+// Mousedown: détecter l'objet sur lequel l'utilisateur appuie
+window.addEventListener("mousedown", (event) => {
+  isDragging = false;
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  // Mettre à jour le raycaster avec la position actuelle de la caméra et les coordonnées de la souris
   raycaster.setFromCamera(mouse, camera);
-
-  // Calculer les objets qui intersectent avec le rayon
   const intersects = raycaster.intersectObjects(
     objectsToUpdate.map((obj) => obj.mesh)
   );
 
   if (intersects.length > 0) {
-    const intersectedObject = intersects[0].object;
+    clickedObject = intersects[0].object;
+  }
+});
 
-    // Trouver l'objet associé
-    const objectData = objectsToUpdate.find(
-      (obj) => obj.mesh === intersectedObject
-    );
-    if (objectData && selectedObject === null) {
-      selectedObject = objectData;
-      // if (!objectData.summary) {
-      //   selectedObject.summary = null;
-      // }
-      showMovieDetails(selectedObject);
+// Mousemove: vérifier si l'utilisateur fait un drag
+window.addEventListener("mousemove", (e) => {
+  if (clickedObject && (e.movementY > 2 || e.movementX > 2)) {
+    isDragging = true;
+  }
+});
+
+// Mouseup: détecter si l'utilisateur a relâché le clic sur le même objet
+window.addEventListener("mouseup", (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(
+    objectsToUpdate.map((obj) => obj.mesh)
+  );
+
+  if (intersects.length > 0 && !isDragging) {
+    const releasedObject = intersects[0].object;
+
+    // Vérifier si l'objet relâché est le même que celui sur lequel on a cliqué
+    if (releasedObject === clickedObject) {
+      const objectData = objectsToUpdate.find(
+        (obj) => obj.mesh === releasedObject
+      );
+      if (objectData && selectedObject === null) {
+        selectedObject = objectData;
+        showMovieDetails(selectedObject);
+      }
     }
   }
+
+  // Réinitialiser l'état
+  clickedObject = null;
+  isDragging = false;
 });
 
 /**
