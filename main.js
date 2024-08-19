@@ -245,6 +245,7 @@ const createBox = (width, height, depth, position, rotation) => {
   objectsToUpdate.push({
     mesh,
     body,
+    summary: movies[objectsToUpdate.length % movies.length].summary || null,
     title: movies[objectsToUpdate.length % movies.length].title,
     year: movies[objectsToUpdate.length % movies.length].year,
     director: movies[objectsToUpdate.length % movies.length].director,
@@ -315,6 +316,9 @@ window.addEventListener("click", (event) => {
     );
     if (objectData && selectedObject === null) {
       selectedObject = objectData;
+      // if (!objectData.summary) {
+      //   selectedObject.summary = null;
+      // }
       showMovieDetails(selectedObject);
     }
   }
@@ -352,11 +356,14 @@ resetMoviesButton.addEventListener("click", () => {
 function showMovieDetails(movie) {
   // Mettre à jour le contenu de l'overlay avec les informations du film
   document.getElementById("movie-title").textContent = movie.title;
-  document.getElementById("movie-year").textContent = `Year: ${movie.year}`;
-  document.getElementById(
-    "movie-director"
-  ).textContent = `Director: ${movie.director}`;
+  document.getElementById("movie-recommendation-percentage").textContent =
+    Math.floor(Math.random() * 8) + 92;
+  document.getElementById("movie-year").textContent = movie.year;
+  document.getElementById("movie-director").textContent = movie.director;
   document.getElementById("movie-cover").src = movie.coverImage;
+  if (movie.summary) {
+    document.getElementById("movie-summary").textContent = movie.summary;
+  }
 
   // Afficher l'overlay
   const overlay = document.getElementById("details-overlay");
@@ -370,6 +377,7 @@ document.getElementById("close-overlay").addEventListener("click", () => {
   overlay.style.opacity = "0";
   overlay.style.pointerEvents = "none";
   setTimeout(() => {
+    document.getElementById("movie-summary").textContent = "";
     selectedObject = null;
-  }, 500);
+  }, 300);
 });

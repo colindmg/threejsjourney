@@ -15,7 +15,7 @@
     <!-- Overlay de la page principale -->
     <div class="fixed z-10 w-screen h-screen top-0 left-0 pointer-events-none">
       <!-- Logo et titre de la page -->
-      <div class="absolute top-16 left-20 flex items-center gap-2">
+      <div class="absolute top-16 left-20 flex items-center gap-2 select-none">
         <img src="/img/logo.webp" alt="Logo" class="w-20" />
         <div class="flex flex-col text-white">
           <h2 class="font-light">FOR YOU</h2>
@@ -49,29 +49,92 @@
       id="details-overlay"
       class="fixed z-10 w-screen h-screen top-0 left-0 pointer-events-none opacity-0 transition-opacity duration-300 bg-black/50 flex items-center justify-center backdrop-blur-sm"
     >
+      <!-- Détails du film -->
       <div
         id="movie-details"
-        class="bg-[#171717] p-6 rounded-lg text-white flex gap-10"
+        class="relative bg-[#171717] rounded-lg text-white flex gap-10 overflow-hidden"
       >
-        <img
-          id="movie-cover"
-          src=""
-          alt="Movie Cover"
-          class="w-full rounded-md max-h-[450px]"
-        />
-        <div class="min-w-[300px]">
-          <h2
-            id="movie-title"
-            class="text-3xl font-semibold mb-3 tracking-wide"
-          ></h2>
-          <p id="movie-year" class="text-sm mb-4"></p>
-          <p id="movie-director" class="text-sm mb-4"></p>
-          <button
-            id="close-overlay"
-            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        <!-- Cover -->
+        <div class="relative w-full h-[450px] max-h-[80vh] max-w-[300px]">
+          <img
+            id="movie-cover"
+            src=""
+            alt="Movie Cover"
+            class="w-full h-full object-cover object-center"
+          />
+          <img
+            src="/img/cover-blur.svg"
+            class="absolute right-0 top-0 h-full"
+          />
+        </div>
+
+        <!-- Infos -->
+        <div class="flex flex-col items-start w-fit py-7 pr-8 h-full">
+          <div class="flex items-center mb-2 justify-between w-full gap-3">
+            <h2
+              id="movie-title"
+              class="text-3xl font-medium tracking-wide"
+            ></h2>
+            <button
+              id="close-overlay"
+              class="p-2 rounded-full bg-white/5 cursor-pointer hover:opacity-90 flex items-center gap-2.5 scale-90"
+            >
+              <img src="/img/add-icon.svg" class="w-5 rotate-45" />
+            </button>
+          </div>
+
+          <p class="font-medium text-[#46D369] mb-2">
+            <span id="movie-recommendation-percentage"></span>% recommended
+          </p>
+
+          <div class="flex items-center gap-2 mb-2">
+            <p id="movie-year" class="text-white/60"></p>
+            <!-- HD Logo -->
+            <div
+              class="text-xs px-1.5 border border-white/60 text-white/90 rounded-md"
+            >
+              <p>HD</p>
+            </div>
+          </div>
+
+          <p class="mb-2 text-white/60">
+            Director :
+            <span
+              id="movie-director"
+              class="text-white hover:underline cursor-default"
+            ></span>
+          </p>
+
+          <p
+            id="movie-summary"
+            class="text-white max-w-[400px] min-w-[300px]"
+          ></p>
+
+          <!-- Boutons -->
+          <div
+            class="absolute bottom-7 flex items-center gap-3 font-medium text-lg tracking-wider"
           >
-            Close
-          </button>
+            <button
+              class="px-4 py-1 pr-5 rounded-sm bg-white text-[#0C0C0C] cursor-pointer pointer-events-auto hover:opacity-90 flex items-center gap-1"
+            >
+              <img src="/img/play-icon.svg" alt="Play movie icon" class="w-8" />
+              Play
+            </button>
+
+            <button
+              id="drop-movie"
+              class="p-2 rounded-full bg-white/10 border border-white/70 cursor-pointer hover:opacity-90 flex items-center gap-2.5"
+            >
+              <img src="/img/like-icon.svg" class="w-5" />
+            </button>
+
+            <button
+              id="drop-movie"
+              class="p-2 rounded-full bg-white/10 border border-white/70 cursor-pointer hover:opacity-90 flex items-center gap-2.5"
+            >
+              <img src="/img/add-icon.svg" class="w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
