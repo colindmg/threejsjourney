@@ -372,7 +372,7 @@ resetMoviesButton.addEventListener("click", () => {
       object.body.removeEventListener("collide", playHitSound);
       world.removeBody(object.body);
       scene.remove(object.mesh);
-    }, objectsToUpdate.indexOf(object) * 50);
+    }, (objectsToUpdate.indexOf(object) % 10) * 50);
   }
 
   objectsToUpdate.splice(0, objectsToUpdate.length);
