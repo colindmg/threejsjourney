@@ -1,6 +1,8 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 /**
  * Base
@@ -39,6 +41,31 @@ scene.add(object1, object2, object3);
 object1.updateMatrixWorld();
 object2.updateMatrixWorld();
 object3.updateMatrixWorld();
+
+/**
+ * Model
+ */
+let model = null;
+const gltfLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("/draco/");
+gltfLoader.setDRACOLoader(dracoLoader);
+
+gltfLoader.load("/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+  model = gltf.scene;
+  gltf.scene.position.y = -1.2;
+  scene.add(gltf.scene);
+});
+
+/**
+ * Lights
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2.1);
+directionalLight.position.set(1, 2, 3);
+scene.add(directionalLight);
 
 /**
  * Raycaster
@@ -159,6 +186,16 @@ const tick = () => {
       console.log("mouse leave");
     }
     currentIntersect = null;
+  }
+
+  // Duck test
+  if (model) {
+    const modelIntersects = raycaster.intersectObject(model);
+    if (modelIntersects.length) {
+      model.scale.set(1.2, 1.2, 1.2);
+    } else {
+      model.scale.set(1, 1, 1);
+    }
   }
 
   // Update controls
