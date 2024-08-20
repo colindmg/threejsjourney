@@ -25,7 +25,7 @@
 
       <!-- Boutons de la page principale -->
       <div
-        class="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 font-medium text-lg tracking-wider"
+        class="absolute bottom-24 left-1/2 -translate-x-1/2 flex max-sm:flex-col-reverse items-center gap-3 font-medium text-lg tracking-wider"
       >
         <button
           id="reset-movies"
@@ -56,10 +56,12 @@
       <!-- Détails du film -->
       <div
         id="movie-details"
-        class="relative bg-[#171717] rounded-lg text-white flex gap-10 overflow-hidden"
+        class="relative bg-[#171717] rounded-lg text-white flex max-sm:flex-col gap-10 overflow-hidden"
       >
         <!-- Cover -->
-        <div class="relative w-full h-[450px] max-h-[80vh] max-w-[300px]">
+        <div
+          class="relative w-full h-[450px] max-h-[80vh] max-w-[300px] max-md:hidden"
+        >
           <img
             id="movie-cover"
             src=""
@@ -73,7 +75,9 @@
         </div>
 
         <!-- Infos -->
-        <div class="flex flex-col items-start w-fit py-7 pr-8 h-full">
+        <div
+          class="flex flex-col items-start w-fit py-7 pr-8 h-full max-md:p-6 max-md:pb-24 max-md:max-w-[90vw]"
+        >
           <div class="flex items-center mb-2 justify-between w-full gap-3">
             <h2
               id="movie-title"
@@ -111,7 +115,7 @@
 
           <p
             id="movie-summary"
-            class="text-white max-w-[400px] min-w-[300px]"
+            class="text-white max-w-[400px] min-w-[300px] max-md:max-w-full max-md:min-w-[0px]"
           ></p>
 
           <!-- Boutons -->
