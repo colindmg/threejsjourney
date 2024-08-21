@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import "./style.css";
 
 /**
@@ -15,6 +16,8 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
+
+const rgbeLoader = new RGBELoader();
 
 /**
  * Base
@@ -74,17 +77,24 @@ gui
   .name("Environment Rotation Y");
 
 // LDR cube texture
-const environmentMapLDR = cubeTextureLoader.load([
-  "/environmentMaps/0/px.png",
-  "/environmentMaps/0/nx.png",
-  "/environmentMaps/0/py.png",
-  "/environmentMaps/0/ny.png",
-  "/environmentMaps/0/pz.png",
-  "/environmentMaps/0/nz.png",
-]);
+// const environmentMapLDR = cubeTextureLoader.load([
+//   "/environmentMaps/0/px.png",
+//   "/environmentMaps/0/nx.png",
+//   "/environmentMaps/0/py.png",
+//   "/environmentMaps/0/ny.png",
+//   "/environmentMaps/0/pz.png",
+//   "/environmentMaps/0/nz.png",
+// ]);
 
-scene.environment = environmentMapLDR;
-scene.background = environmentMapLDR;
+// scene.environment = environmentMapLDR;
+// scene.background = environmentMapLDR;
+
+// HDR (RGBE) equi-rectangular
+rgbeLoader.load("/environmentMaps/0/2k.hdr", (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
+  scene.background = texture;
+});
 
 /**
  * Torus Knot
