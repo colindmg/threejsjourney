@@ -16,6 +16,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
+const textureLoader = new THREE.TextureLoader();
 
 const rgbeLoader = new RGBELoader();
 
@@ -89,12 +90,21 @@ gui
 // scene.environment = environmentMapLDR;
 // scene.background = environmentMapLDR;
 
-// HDR (RGBE) equi-rectangular
-rgbeLoader.load("/environmentMaps/blender2-2k.hdr", (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = texture;
-  // scene.background = texture;
-});
+// // HDR (RGBE) equi-rectangular
+// rgbeLoader.load("/environmentMaps/blender2-2k.hdr", (texture) => {
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.environment = texture;
+//   // scene.background = texture;
+// });
+
+// LDR equi-rectangular
+const environmentMapLDREqui = textureLoader.load(
+  "/environmentMaps/blockadesLabsSkybox/fantasy_lands_castles_at_night.jpg"
+);
+environmentMapLDREqui.mapping = THREE.EquirectangularReflectionMapping;
+environmentMapLDREqui.colorSpace = THREE.SRGBColorSpace;
+scene.environment = environmentMapLDREqui;
+scene.background = environmentMapLDREqui;
 
 /**
  * Torus Knot
