@@ -1,5 +1,6 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
+import { GroundedSkybox } from "three/addons/objects/GroundedSkybox.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -97,14 +98,26 @@ gui
 //   // scene.background = texture;
 // });
 
-// LDR equi-rectangular
-const environmentMapLDREqui = textureLoader.load(
-  "/environmentMaps/blockadesLabsSkybox/fantasy_lands_castles_at_night.jpg"
-);
-environmentMapLDREqui.mapping = THREE.EquirectangularReflectionMapping;
-environmentMapLDREqui.colorSpace = THREE.SRGBColorSpace;
-scene.environment = environmentMapLDREqui;
-scene.background = environmentMapLDREqui;
+// // LDR equi-rectangular
+// const environmentMapLDREqui = textureLoader.load(
+//   "/environmentMaps/blockadesLabsSkybox/fantasy_lands_castles_at_night.jpg"
+// );
+// environmentMapLDREqui.mapping = THREE.EquirectangularReflectionMapping;
+// environmentMapLDREqui.colorSpace = THREE.SRGBColorSpace;
+// scene.environment = environmentMapLDREqui;
+// scene.background = environmentMapLDREqui;
+
+// Ground projected skybox
+rgbeLoader.load("/environmentMaps/2/2k.hdr", (environmentMap) => {
+  environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = environmentMap;
+  // scene.background = texture;
+
+  // Skybox
+  const skybox = new GroundedSkybox(environmentMap, 15, 70, 32);
+  skybox.position.y = 15;
+  scene.add(skybox);
+});
 
 /**
  * Torus Knot
