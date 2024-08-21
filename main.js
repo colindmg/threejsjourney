@@ -90,10 +90,10 @@ gui
 // scene.background = environmentMapLDR;
 
 // HDR (RGBE) equi-rectangular
-rgbeLoader.load("/environmentMaps/blender-2k.hdr", (texture) => {
+rgbeLoader.load("/environmentMaps/blender2-2k.hdr", (texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = texture;
-  scene.background = texture;
+  // scene.background = texture;
 });
 
 /**
