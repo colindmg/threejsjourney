@@ -1,7 +1,20 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import "./style.css";
+
+/**
+ * Loaders
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("/draco/");
+
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+const cubeTextureLoader = new THREE.CubeTextureLoader();
 
 /**
  * Base
@@ -16,6 +29,22 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
+ * Environment map
+ */
+
+// LDR cube texture
+const environmentMapLDR = cubeTextureLoader.load([
+  "/environmentMaps/0/px.png",
+  "/environmentMaps/0/nx.png",
+  "/environmentMaps/0/py.png",
+  "/environmentMaps/0/ny.png",
+  "/environmentMaps/0/pz.png",
+  "/environmentMaps/0/nz.png",
+]);
+
+scene.background = environmentMapLDR;
+
+/**
  * Torus Knot
  */
 const torusKnot = new THREE.Mesh(
@@ -24,6 +53,14 @@ const torusKnot = new THREE.Mesh(
 );
 torusKnot.position.y = 4;
 scene.add(torusKnot);
+
+/**
+ * Models
+ */
+gltfLoader.load("/models/FlightHelmet/glTF/FlightHelmet.gltf", (gltf) => {
+  gltf.scene.scale.set(10, 10, 10);
+  scene.add(gltf.scene);
+});
 
 /**
  * Sizes
