@@ -23,6 +23,7 @@ scene.background = new THREE.Color(0x141414);
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
+const flagTexture = textureLoader.load("/textures/perso-flag.png");
 
 /**
  * Test mesh
@@ -43,12 +44,13 @@ geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
 const material = new THREE.RawShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
-  wireframe: true,
+  // wireframe: true,
   transparent: true,
   uniforms: {
     uFrequency: { value: new THREE.Vector2(10, 5) },
     uTime: { value: 0 },
     uColor: { value: new THREE.Color("orange") },
+    uTexture: { value: flagTexture },
   },
 });
 
@@ -68,7 +70,7 @@ gui
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
-mesh.scale.y = 2 / 3;
+// mesh.scale.y = 2 / 3;
 scene.add(mesh);
 
 /**
