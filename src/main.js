@@ -17,6 +17,7 @@ const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x141414);
 
 /**
  * Textures
@@ -33,7 +34,7 @@ const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 const material = new THREE.RawShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
-  // wireframe: true,
+  wireframe: true,
 });
 
 // Mesh
