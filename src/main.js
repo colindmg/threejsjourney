@@ -30,11 +30,20 @@ const textureLoader = new THREE.TextureLoader();
 // Geometry
 const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
+const count = geometry.attributes.position.count; // Extract the number of vertices in the geometry
+const randoms = new Float32Array(count);
+
+for (let i = 0; i < count; i++) {
+  randoms[i] = Math.random();
+}
+
+geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+
 // Material
 const material = new THREE.RawShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
-  wireframe: true,
+  // wireframe: true,
   transparent: true,
 });
 
