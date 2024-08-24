@@ -29,6 +29,9 @@ const material = new THREE.ShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
   side: THREE.DoubleSide,
+  uniforms: {
+    uTime: { value: 0 },
+  },
 });
 
 // Mesh
@@ -86,9 +89,16 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Animate
  */
+const clock = new THREE.Clock();
+
 const tick = () => {
+  const elapsedTime = clock.getElapsedTime();
+
   // Update controls
   controls.update();
+
+  // Update material
+  material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
