@@ -192,13 +192,25 @@ void main()
 	// float strength = 1.0 - step(0.01, abs(distance(wavedUv, vec2(0.5)) - 0.25));
 
 	// Pattern 39
-	vec2 wavedUv = vec2(
-		vUv.x + sin(vUv.y * uTime * 10.0) * 0.1,
-		vUv.y + sin(vUv.x * uTime * 10.0) * 0.1
-	);
-	float strength = 1.0 - step(0.01, abs(distance(wavedUv, vec2(0.5)) - 0.25));
+	// vec2 wavedUv = vec2(
+	// 	vUv.x + sin(vUv.y * 100.0) * 0.1,
+	// 	vUv.y + sin(vUv.x * 100.0) * 0.1
+	// );
+	// float strength = 1.0 - step(0.01, abs(distance(wavedUv, vec2(0.5)) - 0.25));
 
+	// Pattern 40
+	// float angle = atan(vUv.x, vUv.y);
+	// float strength = angle;
 
+	// Pattern 41
+	// float angle = atan(vUv.x - 0.5, vUv.y - 0.5);
+	// float strength = angle;
+
+	// Pattern 42
+	float angle = atan(vUv.x - 0.5, vUv.y - 0.5);
+	angle /= PI * 2.0;
+	angle += sin(uTime) * 1.0;
+	float strength = angle;
 
 
   gl_FragColor = vec4(vec3(strength), 1.0);
