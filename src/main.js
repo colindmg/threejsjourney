@@ -1,15 +1,15 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import testFragmentShader from "./shaders/test/fragment.glsl";
-import testVertexShader from "./shaders/test/vertex.glsl";
+import waterFragmentShader from "./shaders/water/fragment.glsl";
+import waterVertexShader from "./shaders/water/vertex.glsl";
 import "./style.css";
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI();
+const gui = new GUI({ width: 340 });
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -18,25 +18,21 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
- * Test mesh
+ * Water
  */
 // Geometry
-const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
-// const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5, 32, 32, 32);
+const waterGeometry = new THREE.PlaneGeometry(2, 2, 128, 128);
 
 // Material
-const material = new THREE.ShaderMaterial({
-  vertexShader: testVertexShader,
-  fragmentShader: testFragmentShader,
-  side: THREE.DoubleSide,
-  uniforms: {
-    uTime: { value: 0 },
-  },
+const waterMaterial = new THREE.ShaderMaterial({
+  vertexShader: waterVertexShader,
+  fragmentShader: waterFragmentShader,
 });
 
 // Mesh
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const water = new THREE.Mesh(waterGeometry, waterMaterial);
+water.rotation.x = -Math.PI * 0.5;
+scene.add(water);
 
 /**
  * Sizes
@@ -70,7 +66,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(0.25, -0.25, 1);
+camera.position.set(1, 1, 1);
 scene.add(camera);
 
 // Controls
@@ -96,9 +92,6 @@ const tick = () => {
 
   // Update controls
   controls.update();
-
-  // Update material
-  material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
