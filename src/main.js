@@ -98,6 +98,7 @@ perlinTexture.wrapT = THREE.RepeatWrapping;
 // Material
 const smokeMaterial = new THREE.ShaderMaterial({
   // wireframe: true,
+  depthWrite: false,
   side: THREE.DoubleSide,
   transparent: true,
   vertexShader: coffeeSmokeVertexShader,
