@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "cursor-pointer",
       "hover:opacity-100"
     );
+    artistDiv.style.display = "flex";
     artistDiv.style.opacity = 0.5;
     artistDiv.onpointerenter = () => {
       artistDiv.style.opacity = 1;
@@ -33,8 +34,22 @@ document.addEventListener("DOMContentLoaded", () => {
         artistDiv.style.opacity = 0.5;
       }
     };
-    artistDiv.innerText = `${artist.name} (${artist.twitterAccount})`;
+    // artistDiv.innerText = `${artist.name} (${artist.twitterAccount})`;
     artistDiv.dataset.index = index;
+
+    // Create the span for the artist's name
+    const nameSpan = document.createElement("span");
+    nameSpan.style.width = "150px";
+    nameSpan.innerText = artist.name;
+
+    // Create the span for the artist's Twitter account
+    const twitterSpan = document.createElement("span");
+    twitterSpan.style.width = "150px";
+    twitterSpan.innerText = artist.twitterAccount;
+
+    // Append spans to the artistDiv
+    artistDiv.appendChild(nameSpan);
+    artistDiv.appendChild(twitterSpan);
 
     if (index === selectedArtistIndex) {
       artistDiv.style.opacity = 1;
