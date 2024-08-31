@@ -1,3 +1,4 @@
+import gsap from "gsap";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { AfterimagePass } from "three/examples/jsm/postprocessing/AfterimagePass.js";
@@ -68,6 +69,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     artistListContainer.appendChild(artistDiv);
+  });
+
+  // ANIMATION GSAP D'APPARITION DES ÉLÉMENTS HTML
+  gsap.from("#title1", {
+    duration: 0.5,
+    opacity: 0,
+    filter: "blur(10px)",
+    ease: "power2.out",
+  });
+
+  gsap.from("#title2", {
+    duration: 0.5,
+    opacity: 0,
+    filter: "blur(10px)",
+    ease: "power2.out",
+    delay: 0.25,
+  });
+
+  gsap.from("#titlebar", {
+    duration: 1,
+    width: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    opacity: 0,
+    ease: "power2.inOut",
+    delay: 0.5,
+  });
+
+  gsap.from(".artist-item", {
+    duration: 1,
+    opacity: 0,
+    filter: "blur(10px)",
+    ease: "power2.out",
+    stagger: 0.08,
+    delay: 0.75,
+  });
+
+  gsap.to("#overlay", {
+    duration: 1.5,
+    opacity: 0,
+    backdropFilter: "blur(100px)",
+    ease: "power2.inOut",
+    delay: 1.25,
   });
 });
 
@@ -150,19 +194,29 @@ composer.addPass(renderPass);
 composer.addPass(afterimagePass);
 composer.addPass(outputPass);
 
+// Activate/Deactivate post-processing
+let postProcessingActive = true;
+const onOffButton = document.getElementById("bloom");
+
+onOffButton.addEventListener("click", () => {
+  postProcessingActive = !postProcessingActive;
+
+  if (postProcessingActive) {
+    onOffButton.innerText = "Effect ON";
+    onOffButton.style.opacity = 1;
+  } else {
+    onOffButton.innerText = "Effect OFF";
+    onOffButton.style.opacity = 0.5;
+  }
+});
+
 /**
  * Image spiral
  */
 
 // Geometry
 const spiralGeometry = new THREE.PlaneGeometry(1, 1, 16, 64);
-// smokeGeometry.translate(0, 0.25, 0);
 spiralGeometry.scale(1.5, 6, 1.5);
-
-// Test texture
-const testTexture = textureLoader.load("/textures/7Fringz.png");
-testTexture.wrapS = THREE.RepeatWrapping;
-testTexture.wrapT = THREE.RepeatWrapping;
 
 // Material
 const spiralMaterial = new THREE.ShaderMaterial({
@@ -180,7 +234,6 @@ const spiralMaterial = new THREE.ShaderMaterial({
 
 // Mesh
 const spiral = new THREE.Mesh(spiralGeometry, spiralMaterial);
-// spiral.position.y = -0.5;
 scene.add(spiral);
 
 /**
@@ -205,7 +258,11 @@ const tick = () => {
 
   // Render
   renderer.render(scene, camera);
-  composer.render();
+
+  // Post-processing
+  if (postProcessingActive) {
+    composer.render();
+  }
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
