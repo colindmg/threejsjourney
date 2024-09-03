@@ -71,7 +71,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Fireworks
  */
-const createFirework = (count, position) => {
+const createFirework = (count, position, size) => {
   // Geometry
   const positionsArray = new Float32Array(count * 3);
 
@@ -93,6 +93,9 @@ const createFirework = (count, position) => {
   const material = new THREE.ShaderMaterial({
     vertexShader: fireworkVertexShader,
     fragmentShader: fireworkFragmentShader,
+    uniforms: {
+      uSize: new THREE.Uniform(size),
+    },
   });
 
   // Points
@@ -101,7 +104,11 @@ const createFirework = (count, position) => {
   scene.add(firework);
 };
 
-createFirework(100, new THREE.Vector3());
+createFirework(
+  100, // count
+  new THREE.Vector3(), // position
+  50 // size
+);
 
 /**
  * Animate
