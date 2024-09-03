@@ -178,16 +178,24 @@ const createFirework = (count, position, size, texture, radius, color) => {
   });
 };
 
-window.addEventListener("click", (event) => {
-  createFirework(
-    100, // count
-    new THREE.Vector3(), // position
-    0.5, // size
-    textures[7], // texture
-    1, // radius
-    new THREE.Color(0xff8cf1) // color
+// RANDOM FIREWORKS
+const createRandomFirework = () => {
+  const count = Math.round(400 + Math.random() * 1000);
+  const position = new THREE.Vector3(
+    (Math.random() - 0.5) * 2,
+    Math.random(),
+    (Math.random() - 0.5) * 2
   );
-});
+  const size = 0.1 + Math.random() * 0.1;
+  const texture = textures[Math.floor(Math.random() * textures.length)];
+  const radius = 0.5 + Math.random();
+  const color = new THREE.Color();
+  color.setHSL(Math.random(), 1, 0.7);
+
+  createFirework(count, position, size, texture, radius, color);
+};
+
+window.addEventListener("click", createRandomFirework);
 
 /**
  * Animate
