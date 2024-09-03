@@ -99,15 +99,29 @@ const textures = [
 /**
  * Fireworks
  */
-const createFirework = (count, position, size, texture) => {
+const createFirework = (count, position, size, texture, radius) => {
   // Geometry
   const positionsArray = new Float32Array(count * 3);
+  const sizesArray = new Float32Array(count);
 
   for (let i = 0; i < count * 3; i++) {
     const i3 = i * 3;
-    positionsArray[i3 + 0] = Math.random() - 0.5;
-    positionsArray[i3 + 1] = Math.random() - 0.5;
-    positionsArray[i3 + 2] = Math.random() - 0.5;
+
+    const spherical = new THREE.Spherical(
+      radius * (0.75 + Math.random() * 0.25),
+      Math.random() * Math.PI,
+      Math.random() * Math.PI * 2
+    );
+    const position = new THREE.Vector3();
+    position.setFromSpherical(spherical);
+
+    // Position
+    positionsArray[i3 + 0] = position.x;
+    positionsArray[i3 + 1] = position.y;
+    positionsArray[i3 + 2] = position.z;
+
+    // Size
+    sizesArray[i] = Math.random();
   }
 
   const geometry = new THREE.BufferGeometry();
@@ -115,6 +129,7 @@ const createFirework = (count, position, size, texture) => {
     "position",
     new THREE.BufferAttribute(positionsArray, 3)
   );
+  geometry.setAttribute("aSize", new THREE.BufferAttribute(sizesArray, 1));
 
   // Material
   texture.flipY = false;
@@ -141,7 +156,8 @@ createFirework(
   100, // count
   new THREE.Vector3(), // position
   0.5, // size
-  textures[7] // texture
+  textures[7], // texture
+  1 // radius
 );
 
 /**
