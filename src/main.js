@@ -2,6 +2,7 @@ import gsap from "gsap";
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Sky } from "three/addons/objects/Sky.js";
 import fireworkFragmentShader from "./shaders/firework/fragment.glsl";
 import fireworkVertexShader from "./shaders/firework/vertex.glsl";
 
@@ -196,6 +197,55 @@ const createRandomFirework = () => {
 };
 
 window.addEventListener("click", createRandomFirework);
+
+/**
+ * Sky
+ */
+const sky = new Sky();
+sky.scale.setScalar(450000);
+scene.add(sky);
+
+const sun = new THREE.Vector3();
+
+const effectController = {
+  turbidity: 10,
+  rayleigh: 3,
+  mieCoefficient: 0.005,
+  mieDirectionalG: 0.7,
+  elevation: 2,
+  azimuth: 180,
+  exposure: renderer.toneMappingExposure,
+};
+
+const updateSky = () => {
+  const uniforms = sky.material.uniforms;
+  uniforms["turbidity"].value = effectController.turbidity;
+  uniforms["rayleigh"].value = effectController.rayleigh;
+  uniforms["mieCoefficient"].value = effectController.mieCoefficient;
+  uniforms["mieDirectionalG"].value = effectController.mieDirectionalG;
+
+  const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+  const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+
+  sun.setFromSphericalCoords(1, phi, theta);
+
+  uniforms["sunPosition"].value.copy(sun);
+
+  renderer.toneMappingExposure = effectController.exposure;
+  renderer.render(scene, camera);
+};
+
+gui.add(effectController, "turbidity", 0.0, 20.0, 0.1).onChange(updateSky);
+gui.add(effectController, "rayleigh", 0.0, 4, 0.001).onChange(updateSky);
+gui
+  .add(effectController, "mieCoefficient", 0.0, 0.1, 0.001)
+  .onChange(updateSky);
+gui.add(effectController, "mieDirectionalG", 0.0, 1, 0.001).onChange(updateSky);
+gui.add(effectController, "elevation", -3, 10, 0.01).onChange(updateSky);
+gui.add(effectController, "azimuth", -180, 180, 0.1).onChange(updateSky);
+gui.add(effectController, "exposure", 0, 1, 0.0001).onChange(updateSky);
+
+updateSky();
 
 /**
  * Animate
