@@ -141,6 +141,14 @@ pointLightHelper.material.color.setRGB(1, 0.1, 0.1);
 pointLightHelper.position.set(0, 2.5, 0);
 scene.add(pointLightHelper);
 
+const pointLightHelper2 = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(0.1, 2),
+  new THREE.MeshBasicMaterial()
+);
+pointLightHelper2.material.color.setRGB(0.1, 1, 0.5);
+pointLightHelper2.position.set(2, 2, 2);
+scene.add(pointLightHelper2);
+
 /**
  * Animate
  */
