@@ -37,6 +37,8 @@ void main()
 	vec3 direction = vec3(0.0, -1.0, 0.0);
 	float low = -0.8;
 	float high = 1.5;
+	vec3 pointColor = vec3(1.0, 0.0, 0.0);
+
 	float intensity = dot(normal, direction);
 	intensity = smoothstep(low, high, intensity);
 
@@ -46,10 +48,12 @@ void main()
 
 	float point = distance(uv, vec2(0.5));
 	point = 1. - step(0.5 * intensity, point);
+
+	color = mix(color, pointColor, point);
 	
 
 	// Final color
-	gl_FragColor = vec4(point, point, point, 1.0);
+	gl_FragColor = vec4(color, 1.0);
 	#include <tonemapping_fragment>
 	#include <colorspace_fragment>
 }
