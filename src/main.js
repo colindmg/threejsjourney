@@ -7,7 +7,7 @@ import earthVertexShader from "./shaders/earth/vertex.glsl";
 /**
  * Base
  */
-// Debug
+// Debug UI
 const gui = new GUI();
 
 // Canvas
