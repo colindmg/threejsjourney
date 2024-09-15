@@ -36,7 +36,11 @@ const earthGeometry = new THREE.SphereGeometry(2, 64, 64);
 const earthMaterial = new THREE.ShaderMaterial({
   vertexShader: earthVertexShader,
   fragmentShader: earthFragmentShader,
-  uniforms: {},
+  uniforms: {
+    uDayTexture: new THREE.Uniform(earthDayTexture),
+    uNightTexture: new THREE.Uniform(earthNightTexture),
+    uSpecularCloudsTexture: new THREE.Uniform(earthSpecularCloudsTexture),
+  },
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
