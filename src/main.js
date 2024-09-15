@@ -24,7 +24,9 @@ const textureLoader = new THREE.TextureLoader();
  */
 // Textures
 const earthDayTexture = textureLoader.load("/textures/earth/day.jpg");
+earthDayTexture.colorSpace = THREE.SRGBColorSpace;
 const earthNightTexture = textureLoader.load("/textures/earth/night.jpg");
+earthNightTexture.colorSpace = THREE.SRGBColorSpace;
 const earthSpecularCloudsTexture = textureLoader.load(
   "/textures/earth/specularClouds.jpg"
 );
