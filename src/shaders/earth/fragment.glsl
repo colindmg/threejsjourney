@@ -1,6 +1,6 @@
 uniform sampler2D uDayTexture;
 uniform sampler2D uNightTexture;
-uniform float uSpecularCloudsTexture;
+uniform sampler2D uSpecularCloudsTexture;
 
 varying vec2 vUv;
 varying vec3 vNormal;
@@ -11,6 +11,11 @@ void main()
     vec3 viewDirection = normalize(vPosition - cameraPosition);
     vec3 normal = normalize(vNormal);
     vec3 color = vec3(0.0);
+
+    // Day / Night color
+    vec3 dayColor = texture(uDayTexture, vUv).rgb;
+    vec3 nightColor = texture(uNightTexture, vUv).rgb;
+    color = dayColor;
 
     // Final color
     gl_FragColor = vec4(color, 1.0);

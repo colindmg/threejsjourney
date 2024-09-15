@@ -23,12 +23,14 @@ const textureLoader = new THREE.TextureLoader();
  * Earth
  */
 // Textures
-const earthDayTexture = textureLoader.load("/textures/earth/day.jpg");
+const earthDayTexture = textureLoader.load("/earth/day.jpg");
 earthDayTexture.colorSpace = THREE.SRGBColorSpace;
-const earthNightTexture = textureLoader.load("/textures/earth/night.jpg");
+
+const earthNightTexture = textureLoader.load("/earth/night.jpg");
 earthNightTexture.colorSpace = THREE.SRGBColorSpace;
+
 const earthSpecularCloudsTexture = textureLoader.load(
-  "/textures/earth/specularClouds.jpg"
+  "/earth/specularClouds.jpg"
 );
 
 // Mesh
