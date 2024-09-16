@@ -22,6 +22,28 @@ const textureLoader = new THREE.TextureLoader();
 /**
  * Earth
  */
+// Parameters
+const earthParameters = {};
+earthParameters.atmosphereDayColor = "#00AAFF";
+earthParameters.atmosphereTwilightColor = "#FF6600";
+
+gui
+  .addColor(earthParameters, "atmosphereDayColor")
+  .name("atmosphere day")
+  .onChange(() => {
+    earthMaterial.uniforms.uAtmosphereDayColor.value.set(
+      earthParameters.atmosphereDayColor
+    );
+  });
+gui
+  .addColor(earthParameters, "atmosphereTwilightColor")
+  .name("atmosphere twilight")
+  .onChange(() => {
+    earthMaterial.uniforms.uAtmosphereTwilightColor.value.set(
+      earthParameters.atmosphereTwilightColor
+    );
+  });
+
 // Textures
 const earthDayTexture = textureLoader.load("/earth/day.jpg");
 earthDayTexture.colorSpace = THREE.SRGBColorSpace;
@@ -46,6 +68,12 @@ const earthMaterial = new THREE.ShaderMaterial({
     uNightTexture: new THREE.Uniform(earthNightTexture),
     uSpecularCloudsTexture: new THREE.Uniform(earthSpecularCloudsTexture),
     uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
+    uAtmosphereDayColor: new THREE.Uniform(
+      new THREE.Color(earthParameters.atmosphereDayColor)
+    ),
+    uAtmosphereTwilightColor: new THREE.Uniform(
+      new THREE.Color(earthParameters.atmosphereTwilightColor)
+    ),
   },
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
