@@ -106,6 +106,25 @@ displacement.glowImage.onload = () => {
   displacement.context.drawImage(displacement.glowImage, 20, 20, 32, 32);
 };
 
+// Interactive plane
+displacement.interactivePlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 10),
+  new THREE.MeshBasicMaterial({ color: "red" })
+);
+scene.add(displacement.interactivePlane);
+
+// Raycaster
+displacement.raycaster = new THREE.Raycaster();
+
+// Coordinates
+displacement.screenCursor = new THREE.Vector2(9999, 9999);
+displacement.canvasCursor = new THREE.Vector2(9999, 9999);
+
+window.addEventListener("pointermove", (event) => {
+  displacement.screenCursor.x = (event.clientX / sizes.width) * 2 - 1;
+  displacement.screenCursor.y = -(event.clientY / sizes.height) * 2 + 1;
+});
+
 /**
  * Particles
  */
@@ -133,6 +152,43 @@ scene.add(particles);
 const tick = () => {
   // Update controls
   controls.update();
+
+  /**
+   * Raycaster
+   */
+  displacement.raycaster.setFromCamera(displacement.screenCursor, camera);
+  const intersections = displacement.raycaster.intersectObject(
+    displacement.interactivePlane
+  );
+
+  if (intersections.length) {
+    const uv = intersections[0].uv;
+    displacement.canvasCursor.x = uv.x * displacement.canvas.width;
+    displacement.canvasCursor.y = (1.0 - uv.y) * displacement.canvas.height;
+  }
+
+  /**
+   * Displacement
+   */
+  // Fade out
+  // displacement.context.globalCompositeOperation = "source-over";
+  // displacement.context.fillStyle = "rgba(0, 0, 0, 0.1)";
+  displacement.context.fillRect(
+    0,
+    0,
+    displacement.canvas.width,
+    displacement.canvas.height
+  );
+  // Draw glow
+  const glowSize = displacement.canvas.width * 0.25;
+  displacement.context.globalCompositeOperation = "lighten";
+  displacement.context.drawImage(
+    displacement.glowImage,
+    displacement.canvasCursor.x - glowSize / 2,
+    displacement.canvasCursor.y - glowSize / 2,
+    glowSize,
+    glowSize
+  );
 
   // Render
   renderer.render(scene, camera);
