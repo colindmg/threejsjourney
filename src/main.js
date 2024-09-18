@@ -109,7 +109,7 @@ displacement.glowImage.onload = () => {
 // Interactive plane
 displacement.interactivePlane = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshBasicMaterial({ color: "red" })
+  new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide })
 );
 displacement.interactivePlane.visible = false;
 scene.add(displacement.interactivePlane);
@@ -120,6 +120,7 @@ displacement.raycaster = new THREE.Raycaster();
 // Coordinates
 displacement.screenCursor = new THREE.Vector2(9999, 9999);
 displacement.canvasCursor = new THREE.Vector2(9999, 9999);
+displacement.canvasCursorPrevious = new THREE.Vector2(9999, 9999);
 
 window.addEventListener("pointermove", (event) => {
   displacement.screenCursor.x = (event.clientX / sizes.width) * 2 - 1;
@@ -132,8 +133,34 @@ displacement.texture = new THREE.CanvasTexture(displacement.canvas);
 /**
  * Particles
  */
-const particlesGeometry = new THREE.PlaneGeometry(10, 10, 128, 128);
 
+// Randomness attributes
+const particlesGeometry = new THREE.PlaneGeometry(10, 10, 128, 128);
+particlesGeometry.setIndex(null);
+particlesGeometry.deleteAttribute("normal");
+const intensitiesArray = new Float32Array(
+  particlesGeometry.attributes.position.count
+);
+
+const anglesArray = new Float32Array(
+  particlesGeometry.attributes.position.count
+);
+
+for (let i = 0; i < particlesGeometry.attributes.position.count; i++) {
+  intensitiesArray[i] = Math.random();
+  anglesArray[i] = Math.random() * Math.PI * 2;
+}
+
+particlesGeometry.setAttribute(
+  "aIntensity",
+  new THREE.BufferAttribute(intensitiesArray, 1)
+);
+particlesGeometry.setAttribute(
+  "aAngle",
+  new THREE.BufferAttribute(anglesArray, 1)
+);
+
+// Material
 const particlesMaterial = new THREE.ShaderMaterial({
   vertexShader: particlesVertexShader,
   fragmentShader: particlesFragmentShader,
@@ -184,10 +211,18 @@ const tick = () => {
     displacement.canvas.width,
     displacement.canvas.height
   );
+
+  // Speed alpha
+  const cursorDistance = displacement.canvasCursor.distanceTo(
+    displacement.canvasCursorPrevious
+  );
+  displacement.canvasCursorPrevious.copy(displacement.canvasCursor);
+  const alpha = Math.min(cursorDistance * 0.1, 1);
+
   // Draw glow
   const glowSize = displacement.canvas.width * 0.25;
   displacement.context.globalCompositeOperation = "lighten";
-  displacement.context.globalAlpha = 1;
+  displacement.context.globalAlpha = alpha;
   displacement.context.drawImage(
     displacement.glowImage,
     displacement.canvasCursor.x - glowSize / 2,
