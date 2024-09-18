@@ -111,6 +111,7 @@ displacement.interactivePlane = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
   new THREE.MeshBasicMaterial({ color: "red" })
 );
+displacement.interactivePlane.visible = false;
 scene.add(displacement.interactivePlane);
 
 // Raycaster
@@ -124,6 +125,9 @@ window.addEventListener("pointermove", (event) => {
   displacement.screenCursor.x = (event.clientX / sizes.width) * 2 - 1;
   displacement.screenCursor.y = -(event.clientY / sizes.height) * 2 + 1;
 });
+
+// Texture
+displacement.texture = new THREE.CanvasTexture(displacement.canvas);
 
 /**
  * Particles
@@ -141,6 +145,7 @@ const particlesMaterial = new THREE.ShaderMaterial({
       )
     ),
     uPictureTexture: new THREE.Uniform(textureLoader.load("/picture-4.png")),
+    uDisplacementTexture: new THREE.Uniform(displacement.texture),
   },
 });
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -190,6 +195,9 @@ const tick = () => {
     glowSize,
     glowSize
   );
+
+  // Update texture
+  displacement.texture.needsUpdate = true;
 
   // Render
   renderer.render(scene, camera);

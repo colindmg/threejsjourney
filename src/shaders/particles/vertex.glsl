@@ -1,5 +1,6 @@
 uniform vec2 uResolution;
 uniform sampler2D uPictureTexture;
+uniform sampler2D uDisplacementTexture;
 
 varying vec3 vColor;
 
@@ -12,7 +13,7 @@ void main()
     gl_Position = projectedPosition;
 
     // Picture
-    float pictureIntensity = texture(uPictureTexture, uv).r;
+    float pictureIntensity = texture(uDisplacementTexture, uv).r;
 
     // Point size
     gl_PointSize = 0.15 * pictureIntensity * uResolution.y ;
