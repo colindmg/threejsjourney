@@ -136,6 +136,7 @@ gltfLoader.load("/models.glb", (gltf) => {
   // Geometry
   particles.geometry = new THREE.BufferGeometry();
   particles.geometry.setAttribute("position", particles.positions[1]);
+  particles.geometry.setAttribute("aPositionTarget", particles.positions[3]);
 
   // Material
   particles.material = new THREE.ShaderMaterial({
@@ -149,6 +150,7 @@ gltfLoader.load("/models.glb", (gltf) => {
           sizes.height * sizes.pixelRatio
         )
       ),
+      uProgress: new THREE.Uniform(0),
     },
     blending: THREE.AdditiveBlending,
     depthWrite: false,
@@ -157,6 +159,14 @@ gltfLoader.load("/models.glb", (gltf) => {
   // Points
   particles.points = new THREE.Points(particles.geometry, particles.material);
   scene.add(particles.points);
+
+  // Tweaks
+  gui
+    .add(particles.material.uniforms.uProgress, "value")
+    .min(0)
+    .max(1)
+    .step(0.001)
+    .name("uProgress");
 });
 
 /**
