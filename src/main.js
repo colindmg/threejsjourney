@@ -136,19 +136,29 @@ gltfLoader.load("/models.glb", (gltf) => {
   }
 
   // Geometry
+  const sizesArray = new Float32Array(particles.maxCount);
+
+  for (let i = 0; i < particles.maxCount; i++) sizesArray[i] = Math.random();
+
   particles.geometry = new THREE.BufferGeometry();
   particles.geometry.setAttribute(
     "position",
     particles.positions[particles.index]
   );
   particles.geometry.setAttribute("aPositionTarget", particles.positions[3]);
+  particles.geometry.setAttribute(
+    "aSize",
+    new THREE.BufferAttribute(sizesArray, 1)
+  );
 
   // Material
+  particles.colorA = "#FF7300";
+  particles.colorB = "#0091FF";
   particles.material = new THREE.ShaderMaterial({
     vertexShader: particlesVertexShader,
     fragmentShader: particlesFragmentShader,
     uniforms: {
-      uSize: new THREE.Uniform(0.2),
+      uSize: new THREE.Uniform(0.4),
       uResolution: new THREE.Uniform(
         new THREE.Vector2(
           sizes.width * sizes.pixelRatio,
@@ -156,6 +166,8 @@ gltfLoader.load("/models.glb", (gltf) => {
         )
       ),
       uProgress: new THREE.Uniform(0),
+      uColorA: new THREE.Uniform(new THREE.Color(particles.colorA)),
+      uColorB: new THREE.Uniform(new THREE.Color(particles.colorB)),
     },
     blending: THREE.AdditiveBlending,
     depthWrite: false,
@@ -163,6 +175,7 @@ gltfLoader.load("/models.glb", (gltf) => {
 
   // Points
   particles.points = new THREE.Points(particles.geometry, particles.material);
+  particles.points.frustumCulled = false;
   scene.add(particles.points);
 
   // Methods
@@ -197,6 +210,13 @@ gltfLoader.load("/models.glb", (gltf) => {
   };
 
   // Tweaks
+  gui.addColor(particles, "colorA").onChange(() => {
+    particles.material.uniforms.uColorA.value.set(particles.colorA);
+  });
+  gui.addColor(particles, "colorB").onChange(() => {
+    particles.material.uniforms.uColorB.value.set(particles.colorB);
+  });
+
   gui
     .add(particles.material.uniforms.uProgress, "value")
     .min(0)
