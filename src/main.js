@@ -98,7 +98,8 @@ console.log(gltf);
  * Base geometry
  */
 const baseGeometry = {};
-baseGeometry.instance = new THREE.SphereGeometry(3);
+// baseGeometry.instance = new THREE.SphereGeometry(3);
+baseGeometry.instance = gltf.scene.children[0].geometry;
 baseGeometry.count = baseGeometry.instance.attributes.position.count;
 
 /**
@@ -180,13 +181,17 @@ particles.geometry.setAttribute(
   "aParticlesUv",
   new THREE.BufferAttribute(particlesUvArray, 2)
 );
+particles.geometry.setAttribute(
+  "aColor",
+  baseGeometry.instance.attributes.color
+);
 
 // Material
 particles.material = new THREE.ShaderMaterial({
   vertexShader: particlesVertexShader,
   fragmentShader: particlesFragmentShader,
   uniforms: {
-    uSize: new THREE.Uniform(0.4),
+    uSize: new THREE.Uniform(0.07),
     uResolution: new THREE.Uniform(
       new THREE.Vector2(
         sizes.width * sizes.pixelRatio,
