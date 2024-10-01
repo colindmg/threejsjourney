@@ -161,17 +161,22 @@ const particles = {};
 
 // Geometry
 const particlesUvArray = new Float32Array(baseGeometry.count * 2);
+const particlesSizesArray = new Float32Array(baseGeometry.count);
 
 for (let y = 0; y < gpgpu.size; y++) {
   for (let x = 0; x < gpgpu.size; x++) {
     const i = y * gpgpu.size + x;
     const i2 = i * 2;
 
+    // Particles UV
     const uvX = (x + 0.5) / gpgpu.size;
     const uvY = (y + 0.5) / gpgpu.size;
 
     particlesUvArray[i2 + 0] = uvX;
     particlesUvArray[i2 + 1] = uvY;
+
+    // Particles sizes
+    particlesSizesArray[i] = Math.random();
   }
 }
 
@@ -184,6 +189,10 @@ particles.geometry.setAttribute(
 particles.geometry.setAttribute(
   "aColor",
   baseGeometry.instance.attributes.color
+);
+particles.geometry.setAttribute(
+  "aSize",
+  new THREE.BufferAttribute(particlesSizesArray, 1)
 );
 
 // Material
