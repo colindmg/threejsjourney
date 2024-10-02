@@ -92,7 +92,7 @@ renderer.setClearColor(debugObject.clearColor);
  * Load model
  */
 const gltf = await gltfLoader.loadAsync("/model.glb");
-console.log(gltf);
+// console.log(gltf);
 
 /**
  * Base geometry
@@ -127,7 +127,7 @@ for (let i = 0; i < baseGeometry.count; i++) {
     baseGeometry.instance.attributes.position.array[i3 + 1];
   baseParticlesTexture.image.data[i4 + 2] =
     baseGeometry.instance.attributes.position.array[i3 + 2];
-  baseParticlesTexture.image.data[i4 + 3] = 0;
+  baseParticlesTexture.image.data[i4 + 3] = Math.random();
 }
 
 // Particles variable
@@ -142,6 +142,10 @@ gpgpu.computation.setVariableDependencies(gpgpu.particlesVariable, [
 
 // Uniforms
 gpgpu.particlesVariable.material.uniforms.uTime = new THREE.Uniform(0);
+gpgpu.particlesVariable.material.uniforms.uDeltaTime = new THREE.Uniform(0);
+gpgpu.particlesVariable.material.uniforms.uBase = new THREE.Uniform(
+  baseParticlesTexture
+);
 
 // Init
 gpgpu.computation.init();
@@ -152,6 +156,7 @@ gpgpu.debug = new THREE.Mesh(
   new THREE.MeshBasicMaterial({
     map: gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable)
       .texture,
+    transparent: true,
   })
 );
 gpgpu.debug.position.x = 3;
@@ -247,6 +252,7 @@ const tick = () => {
 
   // GPGPU Update
   gpgpu.particlesVariable.material.uniforms.uTime.value = elapsedTime;
+  gpgpu.particlesVariable.material.uniforms.uDeltaTime.value = deltaTime;
   gpgpu.computation.compute();
   particles.material.uniforms.uParticlesTexture.value =
     gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture;
