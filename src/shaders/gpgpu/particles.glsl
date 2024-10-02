@@ -1,6 +1,7 @@
 uniform float uTime;
 uniform float uDeltaTime;
 uniform sampler2D uBase;
+uniform float uFlowFieldInfluence;
 
 #include ../includes/simplexNoise4d.glsl
 
@@ -19,6 +20,11 @@ void main()
 
   // Alive
   else {
+    // Strenght
+    float strenght = simplexNoise4d(vec4(particle.xyz, time + 1.0));
+    float influence = (uFlowFieldInfluence - 0.5) * (-2.0);
+    strenght = smoothstep(influence, 1.0, strenght);
+
     // Flow field
     vec3 flowField = vec3(
       simplexNoise4d(vec4(particle.xyz + 0.0, time)),
@@ -26,7 +32,8 @@ void main()
       simplexNoise4d(vec4(particle.xyz + 2.0, time))
     );
     flowField = normalize(flowField);
-    particle.xyz += flowField * uDeltaTime * 0.5;
+    particle.xyz += flowField * uDeltaTime * strenght * 0.5;
+
 
     // Decay
     particle.a += uDeltaTime * 0.3;
