@@ -1,9 +1,32 @@
-varying vec2 vUv;
+attribute vec4 tangent;
+
+#include ../includes/simplexNoise4d.glsl
+
+float getWobble(vec3 position)
+{
+  return simplexNoise4d(vec4(
+    position, // XYZ
+    0.0       // W
+  ));
+}
 
 void main()
 {
-  // csm_Position.y += sin(csm_Position.z * 3.0) * 0.5;
+  vec3 biTangent = cross(normal, tangent.xyz);
 
-  // Varyings
-  vUv = uv;
+  // Neigbours positions
+  float shift = 0.01;
+  vec3 positionA = csm_Position + tangent.xyz * shift;
+  vec3 positionB = csm_Position + biTangent * shift;
+
+  // Wobble
+  float wobble = getWobble(csm_Position);
+  csm_Position += wobble * normal;
+  positionA += getWobble(positionA) * normal;
+  positionB += getWobble(positionB) * normal;
+
+  // Compute the normal
+  vec3 toA = normalize(positionA - csm_Position);
+  vec3 toB = normalize(positionB - csm_Position);
+  csm_Normal = cross(toA, toB);
 }

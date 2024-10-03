@@ -5,6 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import wobbleFragmentShader from "./shaders/wobble/fragment.glsl";
 import wobbleVertexShader from "./shaders/wobble/vertex.glsl";
 
@@ -69,7 +70,9 @@ gui.add(material, "thickness", 0, 10, 0.001);
 gui.addColor(material, "color");
 
 // Geometry
-const geometry = new THREE.IcosahedronGeometry(2.5, 50);
+let geometry = new THREE.IcosahedronGeometry(2.5, 50);
+geometry = mergeVertices(geometry);
+geometry.computeTangents();
 
 // Mesh
 const wobble = new THREE.Mesh(geometry, material);
