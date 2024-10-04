@@ -37,14 +37,15 @@ rgbeLoader.load("./urban_alley_01_1k.hdr", (environmentMap) => {
 
   scene.background = environmentMap;
   scene.environment = environmentMap;
+  scene.backgroundIntensity = 0;
 });
 
 /**
  * Wobble
  */
 
-debugObject.colorA = "#0000FF";
-debugObject.colorB = "#FF0000";
+debugObject.colorA = "#545454";
+debugObject.colorB = "#080808";
 
 // Uniforms
 const uniforms = {
@@ -121,27 +122,27 @@ gui.add(material, "transmission", 0, 1, 0.001);
 gui.add(material, "ior", 0, 10, 0.001);
 gui.add(material, "thickness", 0, 10, 0.001);
 
-// // Geometry
-// let geometry = new THREE.IcosahedronGeometry(2.5, 50);
-// geometry = mergeVertices(geometry);
-// geometry.computeTangents();
+// Geometry
+let geometry = new THREE.IcosahedronGeometry(2.5, 50);
+geometry = mergeVertices(geometry);
+geometry.computeTangents();
 
-// // Mesh
-// const wobble = new THREE.Mesh(geometry, material);
-// wobble.customDepthMaterial = depthMaterial;
-// wobble.receiveShadow = true;
-// wobble.castShadow = true;
-// scene.add(wobble);
+// Mesh
+const wobble = new THREE.Mesh(geometry, material);
+wobble.customDepthMaterial = depthMaterial;
+wobble.receiveShadow = true;
+wobble.castShadow = true;
+scene.add(wobble);
 
 // Load model
-gltfLoader.load("./suzanne.glb", (gltf) => {
-  const wobble = gltf.scene.children[0];
-  wobble.receiveShadow = true;
-  wobble.castShadow = true;
-  wobble.material = material;
-  wobble.customDepthMaterial = depthMaterial;
-  scene.add(wobble);
-});
+// gltfLoader.load("./suzanne.glb", (gltf) => {
+//   const wobble = gltf.scene.children[0];
+//   wobble.receiveShadow = true;
+//   wobble.castShadow = true;
+//   wobble.material = material;
+//   wobble.customDepthMaterial = depthMaterial;
+//   scene.add(wobble);
+// });
 
 /**
  * Plane
