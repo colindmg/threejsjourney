@@ -42,6 +42,37 @@ rgbeLoader.load("./aerodynamics_workshop.hdr", (environmentMap) => {
 /**
  * Sliced model
  */
+// Uniforms
+const uniforms = {
+  uSliceStart: new THREE.Uniform(1.75),
+  uSliceArc: new THREE.Uniform(1.25),
+};
+
+gui
+  .add(uniforms.uSliceStart, "value")
+  .min(-Math.PI)
+  .max(Math.PI)
+  .step(0.01)
+  .name("Slice start");
+gui
+  .add(uniforms.uSliceArc, "value")
+  .min(0)
+  .max(Math.PI * 2)
+  .step(0.01)
+  .name("Slice arc");
+
+const patchMap = {
+  csm_Slice: {
+    "#include <colorspace_fragment>": `
+			#include <colorspace_fragment>
+
+			if(!gl_FrontFacing) {
+				gl_FragColor = vec4(0.75, 0.15, 0.3, 1.0);
+			}
+		`,
+  },
+};
+
 // Material
 const material = new THREE.MeshStandardMaterial({
   metalness: 0.5,
@@ -56,12 +87,15 @@ const slicedMaterial = new CustomShaderMaterial({
   silent: true,
   vertexShader: slicedVertexShader,
   fragmentShader: slicedFragmentShader,
+  uniforms,
+  patchMap,
 
   // MeshStandardMaterial properties
   metalness: 0.5,
   roughness: 0.25,
   envMapIntensity: 0.5,
   color: "#858080",
+  side: THREE.DoubleSide,
 });
 
 // Model
