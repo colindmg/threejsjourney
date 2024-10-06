@@ -44,11 +44,44 @@ geometry.deleteAttribute("uv");
 geometry.rotateX(-Math.PI * 0.5);
 
 // Material
+const uniforms = {
+  uPositionFrequency: new THREE.Uniform(0.2),
+  uStrength: new THREE.Uniform(2.0),
+  uWarpFrequency: new THREE.Uniform(5),
+  uWarpStrength: new THREE.Uniform(0.5),
+};
+
+gui
+  .add(uniforms.uPositionFrequency, "value")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("Position Frequency");
+gui
+  .add(uniforms.uStrength, "value")
+  .min(0)
+  .max(10)
+  .step(0.001)
+  .name("Strength");
+gui
+  .add(uniforms.uWarpFrequency, "value")
+  .min(0)
+  .max(10)
+  .step(0.001)
+  .name("Warp Frequency");
+gui
+  .add(uniforms.uWarpStrength, "value")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("Warp Strength");
+
 const material = new CustomShaderMaterial({
   // CSM
   baseMaterial: THREE.MeshStandardMaterial,
   vertexShader: terrainVertexShader,
   fragmentShader: terrainFragmentShader,
+  uniforms,
   silent: true,
 
   // MeshStandardMaterial
