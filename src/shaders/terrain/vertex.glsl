@@ -4,6 +4,9 @@ uniform float uStrength;
 uniform float uWarpFrequency;
 uniform float uWarpStrength;
 
+varying vec3 vPosition;
+varying float vUpDot;
+
 #include ../includes/simplexNoise2d.glsl
 
 float getElevation(vec2 position)
@@ -42,4 +45,8 @@ void main()
   vec3 toB = normalize(positionB - csm_Position);
   csm_Normal = cross(toA, toB);
 
+  // Varyings
+  vPosition = csm_Position;
+  vPosition.xz += uTime * 0.2;
+  vUpDot = dot(csm_Normal, vec3(0.0, 1.0, 0.0));
 }
