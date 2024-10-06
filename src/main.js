@@ -39,6 +39,8 @@ rgbeLoader.load("/spruit_sunrise.hdr", (environmentMap) => {
  */
 // Geometry
 const geometry = new THREE.PlaneGeometry(10, 10, 500, 500);
+geometry.deleteAttribute("normal");
+geometry.deleteAttribute("uv");
 geometry.rotateX(-Math.PI * 0.5);
 
 // Material

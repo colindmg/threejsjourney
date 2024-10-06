@@ -19,5 +19,12 @@ void main()
   // Elevation
   float elevation = getElevation(csm_Position.xz);
   csm_Position.y += elevation;
+  positionA.y += getElevation(positionA.xz);
+  positionB.y += getElevation(positionB.xz);
+
+  // Compute normal
+  vec3 toA = normalize(positionA - csm_Position);
+  vec3 toB = normalize(positionB - csm_Position);
+  csm_Normal = cross(toA, toB);
 
 }
