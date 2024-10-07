@@ -7,6 +7,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 
 /**
@@ -102,6 +103,10 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Update effect composer
+  effectComposer.setSize(sizes.width, sizes.height);
+  effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 /**
@@ -130,6 +135,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.toneMappingExposure = 1.5;
 renderer.setSize(sizes.width, sizes.height);
@@ -150,13 +156,17 @@ dotScreenPass.enabled = false;
 effectComposer.addPass(dotScreenPass);
 
 const glitchPass = new GlitchPass();
-// glitchPass.goWild = true;
-glitchPass.enabled = false;
+glitchPass.goWild = false;
+glitchPass.enabled = true;
 effectComposer.addPass(glitchPass);
 
 const rgbShiftPass = new ShaderPass(RGBShiftShader);
-rgbShiftPass.enabled = true;
+rgbShiftPass.enabled = false;
 effectComposer.addPass(rgbShiftPass);
+
+// Fix du problème de couleurs
+const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+effectComposer.addPass(gammaCorrectionPass);
 
 /**
  * Animate
