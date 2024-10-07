@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DotScreenPass } from "three/examples/jsm/postprocessing/DotScreenPass.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 
 /**
@@ -143,7 +144,13 @@ const renderPass = new RenderPass(scene, camera);
 effectComposer.addPass(renderPass);
 
 const dotScreenPass = new DotScreenPass();
+dotScreenPass.enabled = false;
 effectComposer.addPass(dotScreenPass);
+
+const glitchPass = new GlitchPass();
+// glitchPass.goWild = true;
+glitchPass.enabled = true;
+effectComposer.addPass(glitchPass);
 
 /**
  * Animate
