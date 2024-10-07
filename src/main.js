@@ -1,18 +1,13 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { Brush, Evaluator, SUBTRACTION } from "three-bvh-csg";
-import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
-import terrainFragmentShader from "./shaders/terrain/fragment.glsl";
-import terrainVertexShader from "./shaders/terrain/vertex.glsl";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI({ width: 325 });
-const debugObject = {};
+const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -20,185 +15,65 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
-// Loaders
-const rgbeLoader = new RGBELoader();
+/**
+ * Loaders
+ */
+const gltfLoader = new GLTFLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const textureLoader = new THREE.TextureLoader();
+
+/**
+ * Update all materials
+ */
+const updateAllMaterials = () => {
+  scene.traverse((child) => {
+    if (
+      child instanceof THREE.Mesh &&
+      child.material instanceof THREE.MeshStandardMaterial
+    ) {
+      child.material.envMapIntensity = 2.5;
+      child.material.needsUpdate = true;
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+};
 
 /**
  * Environment map
  */
-rgbeLoader.load("/spruit_sunrise.hdr", (environmentMap) => {
-  environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+const environmentMap = cubeTextureLoader.load([
+  "/textures/environmentMaps/0/px.jpg",
+  "/textures/environmentMaps/0/nx.jpg",
+  "/textures/environmentMaps/0/py.jpg",
+  "/textures/environmentMaps/0/ny.jpg",
+  "/textures/environmentMaps/0/pz.jpg",
+  "/textures/environmentMaps/0/nz.jpg",
+]);
 
-  scene.background = environmentMap;
-  scene.backgroundBlurriness = 0.5;
-  scene.environment = environmentMap;
-});
-
-/**
- * Terrain
- */
-// Geometry
-const geometry = new THREE.PlaneGeometry(10, 10, 500, 500);
-geometry.deleteAttribute("normal");
-geometry.deleteAttribute("uv");
-geometry.rotateX(-Math.PI * 0.5);
-
-// Material
-debugObject.colorWaterDeep = "#002b3d";
-debugObject.colorWaterSurface = "#66a8ff";
-debugObject.colorSand = "#ffe894";
-debugObject.colorGrass = "#85d534";
-debugObject.colorSnow = "#ffffff";
-debugObject.colorRock = "#bfbd8d";
-
-const uniforms = {
-  uTime: new THREE.Uniform(0),
-  uPositionFrequency: new THREE.Uniform(0.2),
-  uStrength: new THREE.Uniform(2.0),
-  uWarpFrequency: new THREE.Uniform(5),
-  uWarpStrength: new THREE.Uniform(0.5),
-
-  // COLORS
-  uColorWaterDeep: new THREE.Uniform(
-    new THREE.Color(debugObject.colorWaterDeep)
-  ),
-  uColorWaterSurface: new THREE.Uniform(
-    new THREE.Color(debugObject.colorWaterSurface)
-  ),
-  uColorSand: new THREE.Uniform(new THREE.Color(debugObject.colorSand)),
-  uColorGrass: new THREE.Uniform(new THREE.Color(debugObject.colorGrass)),
-  uColorSnow: new THREE.Uniform(new THREE.Color(debugObject.colorSnow)),
-  uColorRock: new THREE.Uniform(new THREE.Color(debugObject.colorRock)),
-};
-
-// Tweaks
-gui
-  .add(uniforms.uPositionFrequency, "value")
-  .min(0)
-  .max(1)
-  .step(0.001)
-  .name("Position Frequency");
-gui
-  .add(uniforms.uStrength, "value")
-  .min(0)
-  .max(10)
-  .step(0.001)
-  .name("Strength");
-gui
-  .add(uniforms.uWarpFrequency, "value")
-  .min(0)
-  .max(10)
-  .step(0.001)
-  .name("Warp Frequency");
-gui
-  .add(uniforms.uWarpStrength, "value")
-  .min(0)
-  .max(1)
-  .step(0.001)
-  .name("Warp Strength");
-
-gui
-  .addColor(debugObject, "colorWaterDeep")
-  .onChange(() =>
-    uniforms.uColorWaterDeep.value.set(debugObject.colorWaterDeep)
-  );
-gui
-  .addColor(debugObject, "colorWaterSurface")
-  .onChange(() =>
-    uniforms.uColorWaterSurface.value.set(debugObject.colorWaterSurface)
-  );
-gui
-  .addColor(debugObject, "colorSand")
-  .onChange(() => uniforms.uColorSand.value.set(debugObject.colorSand));
-gui
-  .addColor(debugObject, "colorGrass")
-  .onChange(() => uniforms.uColorGrass.value.set(debugObject.colorGrass));
-gui
-  .addColor(debugObject, "colorSnow")
-  .onChange(() => uniforms.uColorSnow.value.set(debugObject.colorSnow));
-gui
-  .addColor(debugObject, "colorRock")
-  .onChange(() => uniforms.uColorRock.value.set(debugObject.colorRock));
-
-const material = new CustomShaderMaterial({
-  // CSM
-  baseMaterial: THREE.MeshStandardMaterial,
-  vertexShader: terrainVertexShader,
-  fragmentShader: terrainFragmentShader,
-  uniforms,
-  silent: true,
-
-  // MeshStandardMaterial
-  metalness: 0,
-  roughness: 0.5,
-  color: "#85D534",
-});
-
-const depthMaterial = new CustomShaderMaterial({
-  // CSM
-  baseMaterial: THREE.MeshDepthMaterial,
-  vertexShader: terrainVertexShader,
-  uniforms,
-  silent: true,
-
-  // MeshDepthMaterial
-  depthPacking: THREE.RGBADepthPacking,
-});
-
-// Mesh
-const terrain = new THREE.Mesh(geometry, material);
-terrain.customDepthMaterial = depthMaterial;
-terrain.castShadow = true;
-terrain.receiveShadow = true;
-scene.add(terrain);
+scene.background = environmentMap;
+scene.environment = environmentMap;
 
 /**
- * Water
+ * Models
  */
-const water = new THREE.Mesh(
-  new THREE.PlaneGeometry(10, 10, 1, 1),
-  new THREE.MeshPhysicalMaterial({
-    transmission: 1,
-    roughness: 0.3,
-  })
-);
-water.rotation.x = -Math.PI * 0.5;
-water.position.y = -0.1;
-scene.add(water);
+gltfLoader.load("/models/DamagedHelmet/glTF/DamagedHelmet.gltf", (gltf) => {
+  gltf.scene.scale.set(2, 2, 2);
+  gltf.scene.rotation.y = Math.PI * 0.5;
+  scene.add(gltf.scene);
 
-/**
- * Board
- */
-// Brushes
-const boardFill = new Brush(new THREE.BoxGeometry(11, 2, 11));
-const boardHole = new Brush(new THREE.BoxGeometry(10, 2.1, 10));
-
-// Evaluate
-const evaluator = new Evaluator();
-const board = evaluator.evaluate(boardFill, boardHole, SUBTRACTION);
-board.geometry.clearGroups();
-board.material = new THREE.MeshStandardMaterial({
-  color: "#f2f2f2",
-  roughness: 0.3,
-  metalness: 0,
+  updateAllMaterials();
 });
-board.castShadow = true;
-board.receiveShadow = true;
-scene.add(board);
 
 /**
  * Lights
  */
-const directionalLight = new THREE.DirectionalLight("#ffffff", 2);
-directionalLight.position.set(6.25, 3, 4);
+const directionalLight = new THREE.DirectionalLight("#ffffff", 3);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.near = 0.1;
-directionalLight.shadow.camera.far = 30;
-directionalLight.shadow.camera.top = 8;
-directionalLight.shadow.camera.right = 8;
-directionalLight.shadow.camera.bottom = -8;
-directionalLight.shadow.camera.left = -8;
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.normalBias = 0.05;
+directionalLight.position.set(0.25, 3, -2.25);
 scene.add(directionalLight);
 
 /**
@@ -207,14 +82,12 @@ scene.add(directionalLight);
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
-  pixelRatio: Math.min(window.devicePixelRatio, 2),
 };
 
 window.addEventListener("resize", () => {
   // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-  sizes.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
   // Update camera
   camera.aspect = sizes.width / sizes.height;
@@ -222,7 +95,7 @@ window.addEventListener("resize", () => {
 
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(sizes.pixelRatio);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 /**
@@ -230,12 +103,12 @@ window.addEventListener("resize", () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-  35,
+  75,
   sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.set(-10, 6, -2);
+camera.position.set(4, 1, -4);
 scene.add(camera);
 
 // Controls
@@ -250,11 +123,11 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 1.5;
 renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(sizes.pixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Animate
@@ -263,9 +136,6 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
-
-  // Update material uniforms
-  uniforms.uTime.value = elapsedTime;
 
   // Update controls
   controls.update();
