@@ -9,7 +9,6 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 
 /**
@@ -184,8 +183,39 @@ gui.add(unrealBloomPass, "radius").min(0).max(2).step(0.001);
 gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
 
 // Fix du problème de couleurs
-const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
-effectComposer.addPass(gammaCorrectionPass);
+// const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+// effectComposer.addPass(gammaCorrectionPass);
+
+// Premier pass personnalisé
+// Tint pass
+const TintShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+
+    void main()
+    {
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+      vUv = uv;
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    varying vec2 vUv;
+
+    void main()
+    {
+      vec4 color = texture2D(tDiffuse, vUv);
+      gl_FragColor = vec4(1.0, 0., 0., 0.8) * color;
+    }
+  `,
+};
+
+const tintPass = new ShaderPass(TintShader);
+effectComposer.addPass(tintPass);
 
 // Anti-aliasing
 if (renderer.getPixelRatio() === 1 && !renderer.capabilities.isWebGL2) {
