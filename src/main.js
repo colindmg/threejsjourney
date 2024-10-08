@@ -191,6 +191,7 @@ gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
 const TintShader = {
   uniforms: {
     tDiffuse: { value: null },
+    uTint: { value: null },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -204,18 +205,40 @@ const TintShader = {
   `,
   fragmentShader: `
     uniform sampler2D tDiffuse;
+    uniform vec3 uTint;
     varying vec2 vUv;
 
     void main()
     {
       vec4 color = texture2D(tDiffuse, vUv);
-      gl_FragColor = vec4(1.0, 0., 0., 0.8) * color;
+      color.rgb += uTint;
+      gl_FragColor = color;
     }
   `,
 };
 
 const tintPass = new ShaderPass(TintShader);
+tintPass.material.uniforms.uTint.value = new THREE.Vector3(0.2, 0.1, 0.1);
 effectComposer.addPass(tintPass);
+
+gui
+  .add(tintPass.material.uniforms.uTint.value, "x")
+  .min(-1)
+  .max(1)
+  .step(0.001)
+  .name("Red");
+gui
+  .add(tintPass.material.uniforms.uTint.value, "y")
+  .min(-1)
+  .max(1)
+  .step(0.001)
+  .name("Green");
+gui
+  .add(tintPass.material.uniforms.uTint.value, "z")
+  .min(-1)
+  .max(1)
+  .step(0.001)
+  .name("Blue");
 
 // Anti-aliasing
 if (renderer.getPixelRatio() === 1 && !renderer.capabilities.isWebGL2) {
