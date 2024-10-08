@@ -9,6 +9,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 
 /**
@@ -182,11 +183,7 @@ gui.add(unrealBloomPass, "strength").min(0).max(2).step(0.001);
 gui.add(unrealBloomPass, "radius").min(0).max(2).step(0.001);
 gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
 
-// Fix du problème de couleurs
-// const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
-// effectComposer.addPass(gammaCorrectionPass);
-
-// Premier pass personnalisé
+// Pass personnalisés
 // Tint pass
 const TintShader = {
   uniforms: {
@@ -219,6 +216,7 @@ const TintShader = {
 
 const tintPass = new ShaderPass(TintShader);
 tintPass.material.uniforms.uTint.value = new THREE.Vector3(0.2, 0.1, 0.1);
+tintPass.enabled = false;
 effectComposer.addPass(tintPass);
 
 gui
@@ -240,11 +238,55 @@ gui
   .step(0.001)
   .name("Blue");
 
+// Displacement pass
+const DisplacementShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    uTime: { value: null },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+
+    void main()
+    {
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+      vUv = uv;
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float uTime;
+
+    varying vec2 vUv;
+
+    void main()
+    {
+      vec2 newUv = vec2(
+        vUv.x,
+        vUv.y + sin(vUv.x * 10.0 + uTime) * 0.1
+      );
+      vec4 color = texture2D(tDiffuse, newUv);
+
+
+      gl_FragColor = color;
+    }
+  `,
+};
+
+const displacementPass = new ShaderPass(DisplacementShader);
+displacementPass.material.uniforms.uTime.value = 0;
+effectComposer.addPass(displacementPass);
+
 // Anti-aliasing
 if (renderer.getPixelRatio() === 1 && !renderer.capabilities.isWebGL2) {
   const smaaPass = new SMAAPass();
   effectComposer.addPass(smaaPass);
 }
+
+// Fix du problème de couleurs
+const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+effectComposer.addPass(gammaCorrectionPass);
 
 /**
  * Animate
@@ -253,6 +295,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update pass uniforms
+  displacementPass.material.uniforms.uTime.value = elapsedTime;
 
   // Update controls
   controls.update();
