@@ -1,5 +1,13 @@
+import Stats from "stats.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+/**
+ * Stats (monitoring)
+ */
+const stats = new Stats();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
 
 /**
  * Base
@@ -124,6 +132,8 @@ scene.add(directionalLight);
 const clock = new THREE.Clock();
 
 const tick = () => {
+  stats.begin();
+
   const elapsedTime = clock.getElapsedTime();
 
   // Update test mesh
@@ -137,6 +147,8 @@ const tick = () => {
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
+
+  stats.end();
 };
 
 tick();
@@ -145,8 +157,8 @@ tick();
  * Tips
  */
 
-// // Tip 4
-// console.log(renderer.info)
+// Tip 4
+console.log(renderer.info);
 
 // // Tip 6
 // scene.remove(cube)
