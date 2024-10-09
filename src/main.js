@@ -1,23 +1,9 @@
-import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DotScreenPass } from "three/examples/jsm/postprocessing/DotScreenPass.js";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass.js";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
-import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 
 /**
  * Base
  */
-// Debug
-const gui = new GUI();
-
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
@@ -25,65 +11,10 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
- * Loaders
+ * Textures
  */
-const gltfLoader = new GLTFLoader();
-const cubeTextureLoader = new THREE.CubeTextureLoader();
 const textureLoader = new THREE.TextureLoader();
-
-/**
- * Update all materials
- */
-const updateAllMaterials = () => {
-  scene.traverse((child) => {
-    if (
-      child instanceof THREE.Mesh &&
-      child.material instanceof THREE.MeshStandardMaterial
-    ) {
-      child.material.envMapIntensity = 2.5;
-      child.material.needsUpdate = true;
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
-};
-
-/**
- * Environment map
- */
-const environmentMap = cubeTextureLoader.load([
-  "/textures/environmentMaps/0/px.jpg",
-  "/textures/environmentMaps/0/nx.jpg",
-  "/textures/environmentMaps/0/py.jpg",
-  "/textures/environmentMaps/0/ny.jpg",
-  "/textures/environmentMaps/0/pz.jpg",
-  "/textures/environmentMaps/0/nz.jpg",
-]);
-
-scene.background = environmentMap;
-scene.environment = environmentMap;
-
-/**
- * Models
- */
-gltfLoader.load("/models/DamagedHelmet/glTF/DamagedHelmet.gltf", (gltf) => {
-  gltf.scene.scale.set(2, 2, 2);
-  gltf.scene.rotation.y = Math.PI * 0.5;
-  scene.add(gltf.scene);
-
-  updateAllMaterials();
-});
-
-/**
- * Lights
- */
-const directionalLight = new THREE.DirectionalLight("#ffffff", 3);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.far = 15;
-directionalLight.shadow.normalBias = 0.05;
-directionalLight.position.set(0.25, 3, -2.25);
-scene.add(directionalLight);
+const displacementTexture = textureLoader.load("/textures/displacementMap.png");
 
 /**
  * Sizes
@@ -105,10 +36,6 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-  // Update effect composer
-  effectComposer.setSize(sizes.width, sizes.height);
-  effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 /**
@@ -121,7 +48,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(4, 1, -4);
+camera.position.set(2, 2, 6);
 scene.add(camera);
 
 // Controls
@@ -133,164 +60,63 @@ controls.enableDamping = true;
  */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  powerPreference: "high-performance",
   antialias: true,
 });
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = 1.5;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(window.devicePixelRatio);
 
 /**
- * Postprocessing
+ * Test meshes
  */
-// Render target
-const renderTarget = new THREE.WebGLRenderTarget(800, 600, {
-  samples: renderer.getPixelRatio() === 1 ? 2 : 0,
-});
-
-const effectComposer = new EffectComposer(renderer, renderTarget);
-effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-effectComposer.setSize(sizes.width, sizes.height);
-
-const renderPass = new RenderPass(scene, camera);
-effectComposer.addPass(renderPass);
-
-const dotScreenPass = new DotScreenPass();
-dotScreenPass.enabled = false;
-effectComposer.addPass(dotScreenPass);
-
-const glitchPass = new GlitchPass();
-glitchPass.goWild = false;
-glitchPass.enabled = false;
-effectComposer.addPass(glitchPass);
-
-const rgbShiftPass = new ShaderPass(RGBShiftShader);
-rgbShiftPass.enabled = false;
-effectComposer.addPass(rgbShiftPass);
-
-const unrealBloomPass = new UnrealBloomPass();
-unrealBloomPass.strength = 0.3;
-unrealBloomPass.radius = 1;
-unrealBloomPass.threshold = 0.6;
-unrealBloomPass.enabled = true;
-effectComposer.addPass(unrealBloomPass);
-
-gui.add(unrealBloomPass, "enabled").name("Bloom");
-gui.add(unrealBloomPass, "strength").min(0).max(2).step(0.001);
-gui.add(unrealBloomPass, "radius").min(0).max(2).step(0.001);
-gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
-
-// Pass personnalisés
-// Tint pass
-const TintShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    uTint: { value: null },
-  },
-  vertexShader: `
-    varying vec2 vUv;
-
-    void main()
-    {
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-      vUv = uv;
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D tDiffuse;
-    uniform vec3 uTint;
-    varying vec2 vUv;
-
-    void main()
-    {
-      vec4 color = texture2D(tDiffuse, vUv);
-      color.rgb += uTint;
-      gl_FragColor = color;
-    }
-  `,
-};
-
-const tintPass = new ShaderPass(TintShader);
-tintPass.material.uniforms.uTint.value = new THREE.Vector3(0.2, 0.1, 0.1);
-tintPass.enabled = false;
-effectComposer.addPass(tintPass);
-
-gui
-  .add(tintPass.material.uniforms.uTint.value, "x")
-  .min(-1)
-  .max(1)
-  .step(0.001)
-  .name("Red");
-gui
-  .add(tintPass.material.uniforms.uTint.value, "y")
-  .min(-1)
-  .max(1)
-  .step(0.001)
-  .name("Green");
-gui
-  .add(tintPass.material.uniforms.uTint.value, "z")
-  .min(-1)
-  .max(1)
-  .step(0.001)
-  .name("Blue");
-
-// Displacement pass
-const DisplacementShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    uNormalMap: { value: null },
-  },
-  vertexShader: `
-    varying vec2 vUv;
-
-    void main()
-    {
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-      vUv = uv;
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D tDiffuse;
-    uniform sampler2D uNormalMap;
-
-    varying vec2 vUv;
-
-    void main()
-    {
-      vec3 normalColor = texture2D(uNormalMap, vUv).xyz * 2.0 - 1.0;
-      vec2 newUv = vUv + normalColor.xy * 0.1;
-      vec4 color = texture2D(tDiffuse, newUv);
-
-      vec3 lightDirection = normalize(vec3(-1.0, 1.0, 0.0));
-      float lightness = clamp(dot(normalColor, lightDirection), 0.0, 1.0);
-      color.rgb += lightness * 2.0;
-
-
-      gl_FragColor = color;
-    }
-  `,
-};
-
-const displacementPass = new ShaderPass(DisplacementShader);
-displacementPass.material.uniforms.uNormalMap.value = textureLoader.load(
-  "/textures/interfaceNormalMap.png"
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(2, 2, 2),
+  new THREE.MeshStandardMaterial()
 );
-effectComposer.addPass(displacementPass);
+cube.castShadow = true;
+cube.receiveShadow = true;
+cube.position.set(-5, 0, 0);
+scene.add(cube);
 
-// Anti-aliasing
-if (renderer.getPixelRatio() === 1 && !renderer.capabilities.isWebGL2) {
-  const smaaPass = new SMAAPass();
-  effectComposer.addPass(smaaPass);
-}
+const torusKnot = new THREE.Mesh(
+  new THREE.TorusKnotGeometry(1, 0.4, 128, 32),
+  new THREE.MeshStandardMaterial()
+);
+torusKnot.castShadow = true;
+torusKnot.receiveShadow = true;
+scene.add(torusKnot);
 
-// Fix du problème de couleurs
-const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
-effectComposer.addPass(gammaCorrectionPass);
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 32, 32),
+  new THREE.MeshStandardMaterial()
+);
+sphere.position.set(5, 0, 0);
+sphere.castShadow = true;
+sphere.receiveShadow = true;
+scene.add(sphere);
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 10),
+  new THREE.MeshStandardMaterial()
+);
+floor.position.set(0, -2, 0);
+floor.rotation.x = -Math.PI * 0.5;
+floor.castShadow = true;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/**
+ * Lights
+ */
+const directionalLight = new THREE.DirectionalLight("#ffffff", 3);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.normalBias = 0.05;
+directionalLight.position.set(0.25, 3, 2.25);
+scene.add(directionalLight);
 
 /**
  * Animate
@@ -300,18 +126,189 @@ const clock = new THREE.Clock();
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
-  // Update pass uniforms
-  // displacementPass.material.uniforms.uTime.value = elapsedTime;
+  // Update test mesh
+  torusKnot.rotation.y = elapsedTime * 0.1;
 
   // Update controls
   controls.update();
 
   // Render
-  // renderer.render(scene, camera);
-  effectComposer.render();
+  renderer.render(scene, camera);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
 
 tick();
+
+/**
+ * Tips
+ */
+
+// // Tip 4
+// console.log(renderer.info)
+
+// // Tip 6
+// scene.remove(cube)
+// cube.geometry.dispose()
+// cube.material.dispose()
+
+// // Tip 10
+// directionalLight.shadow.camera.top = 3
+// directionalLight.shadow.camera.right = 6
+// directionalLight.shadow.camera.left = - 6
+// directionalLight.shadow.camera.bottom = - 3
+// directionalLight.shadow.camera.far = 10
+// directionalLight.shadow.mapSize.set(1024, 1024)
+
+// const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+// scene.add(cameraHelper)
+
+// // Tip 11
+// cube.castShadow = true
+// cube.receiveShadow = false
+
+// torusKnot.castShadow = true
+// torusKnot.receiveShadow = false
+
+// sphere.castShadow = true
+// sphere.receiveShadow = false
+
+// floor.castShadow = false
+// floor.receiveShadow = true
+
+// // Tip 12
+// renderer.shadowMap.autoUpdate = false
+// renderer.shadowMap.needsUpdate = true
+
+// // Tip 18
+// for(let i = 0; i < 50; i++)
+// {
+//     const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
+//     const material = new THREE.MeshNormalMaterial()
+
+//     const mesh = new THREE.Mesh(geometry, material)
+//     mesh.position.x = (Math.random() - 0.5) * 10
+//     mesh.position.y = (Math.random() - 0.5) * 10
+//     mesh.position.z = (Math.random() - 0.5) * 10
+//     mesh.rotation.x = (Math.random() - 0.5) * Math.PI * 2
+//     mesh.rotation.y = (Math.random() - 0.5) * Math.PI * 2
+
+//     scene.add(mesh)
+// }
+
+// // Tip 19
+// for(let i = 0; i < 50; i++)
+// {
+//     const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
+//     const material = new THREE.MeshNormalMaterial()
+
+//     const mesh = new THREE.Mesh(geometry, material)
+//     mesh.position.x = (Math.random() - 0.5) * 10
+//     mesh.position.y = (Math.random() - 0.5) * 10
+//     mesh.position.z = (Math.random() - 0.5) * 10
+//     mesh.rotation.x = (Math.random() - 0.5) * Math.PI * 2
+//     mesh.rotation.y = (Math.random() - 0.5) * Math.PI * 2
+
+//     scene.add(mesh)
+// }
+
+// // Tip 20
+// const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
+// for(let i = 0; i < 50; i++)
+// {
+//     const material = new THREE.MeshNormalMaterial()
+
+//     const mesh = new THREE.Mesh(geometry, material)
+//     mesh.position.x = (Math.random() - 0.5) * 10
+//     mesh.position.y = (Math.random() - 0.5) * 10
+//     mesh.position.z = (Math.random() - 0.5) * 10
+//     mesh.rotation.x = (Math.random() - 0.5) * Math.PI * 2
+//     mesh.rotation.y = (Math.random() - 0.5) * Math.PI * 2
+
+//     scene.add(mesh)
+// }
+
+// // Tip 22
+// const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
+// const material = new THREE.MeshNormalMaterial()
+
+// for(let i = 0; i < 50; i++)
+// {
+//     const mesh = new THREE.Mesh(geometry, material)
+//     mesh.position.x = (Math.random() - 0.5) * 10
+//     mesh.position.y = (Math.random() - 0.5) * 10
+//     mesh.position.z = (Math.random() - 0.5) * 10
+//     mesh.rotation.x = (Math.random() - 0.5) * Math.PI * 2
+//     mesh.rotation.y = (Math.random() - 0.5) * Math.PI * 2
+
+//     scene.add(mesh)
+// }
+
+// // Tip 29
+// renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+// // Tip 31, 32, 34 and 35
+// const shaderGeometry = new THREE.PlaneGeometry(10, 10, 256, 256)
+
+// const shaderMaterial = new THREE.ShaderMaterial({
+//     uniforms:
+//     {
+//         uDisplacementTexture: { value: displacementTexture },
+//         uDisplacementStrength: { value: 1.5 }
+//     },
+//     vertexShader: `
+//         uniform sampler2D uDisplacementTexture;
+//         uniform float uDisplacementStrength;
+
+//         varying vec2 vUv;
+
+//         void main()
+//         {
+//             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+
+//             float elevation = texture2D(uDisplacementTexture, uv).r;
+//             if(elevation < 0.5)
+//             {
+//                 elevation = 0.5;
+//             }
+
+//             modelPosition.y += elevation * uDisplacementStrength;
+
+//             gl_Position = projectionMatrix * viewMatrix * modelPosition;
+
+//             vUv = uv;
+//         }
+//     `,
+//     fragmentShader: `
+//         uniform sampler2D uDisplacementTexture;
+
+//         varying vec2 vUv;
+
+//         void main()
+//         {
+//             float elevation = texture2D(uDisplacementTexture, vUv).r;
+//             if(elevation < 0.25)
+//             {
+//                 elevation = 0.25;
+//             }
+
+//             vec3 depthColor = vec3(1.0, 0.1, 0.1);
+//             vec3 surfaceColor = vec3(0.1, 0.0, 0.5);
+//             vec3 finalColor = vec3(0.0);
+//             finalColor.r += depthColor.r + (surfaceColor.r - depthColor.r) * elevation;
+//             finalColor.g += depthColor.g + (surfaceColor.g - depthColor.g) * elevation;
+//             finalColor.b += depthColor.b + (surfaceColor.b - depthColor.b) * elevation;
+
+//             gl_FragColor = vec4(finalColor, 1.0);
+//         }
+//     `
+// })
+
+// const shaderMesh = new THREE.Mesh(shaderGeometry, shaderMaterial)
+// shaderMesh.rotation.x = - Math.PI * 0.5
+// scene.add(shaderMesh)
