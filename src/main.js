@@ -160,38 +160,38 @@ tick();
 // Tip 4
 console.log(renderer.info);
 
-// // Tip 6
-// scene.remove(cube)
-// cube.geometry.dispose()
-// cube.material.dispose()
+// Tip 6
+scene.remove(cube);
+cube.geometry.dispose();
+cube.material.dispose();
 
-// // Tip 10
-// directionalLight.shadow.camera.top = 3
-// directionalLight.shadow.camera.right = 6
-// directionalLight.shadow.camera.left = - 6
-// directionalLight.shadow.camera.bottom = - 3
-// directionalLight.shadow.camera.far = 10
-// directionalLight.shadow.mapSize.set(1024, 1024)
+// Tip 10
+directionalLight.shadow.camera.top = 3;
+directionalLight.shadow.camera.right = 6;
+directionalLight.shadow.camera.left = -6;
+directionalLight.shadow.camera.bottom = -3;
+directionalLight.shadow.camera.far = 10;
+directionalLight.shadow.mapSize.set(1024, 1024);
 
-// const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-// scene.add(cameraHelper)
+const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(cameraHelper);
 
-// // Tip 11
-// cube.castShadow = true
-// cube.receiveShadow = false
+// Tip 11
+cube.castShadow = true;
+cube.receiveShadow = false;
 
-// torusKnot.castShadow = true
-// torusKnot.receiveShadow = false
+torusKnot.castShadow = true;
+torusKnot.receiveShadow = false;
 
-// sphere.castShadow = true
-// sphere.receiveShadow = false
+sphere.castShadow = true;
+sphere.receiveShadow = false;
 
-// floor.castShadow = false
-// floor.receiveShadow = true
+floor.castShadow = false;
+floor.receiveShadow = true;
 
-// // Tip 12
-// renderer.shadowMap.autoUpdate = false
-// renderer.shadowMap.needsUpdate = true
+// Tip 12
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 
 // // Tip 18
 // for(let i = 0; i < 50; i++)
