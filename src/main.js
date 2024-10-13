@@ -255,6 +255,7 @@ const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 const material = new THREE.MeshNormalMaterial();
 
 const mesh = new THREE.InstancedMesh(geometry, material, 50);
+mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 scene.add(mesh);
 
 for (let i = 0; i < 50; i++) {
