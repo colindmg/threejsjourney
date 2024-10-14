@@ -6,6 +6,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 /**
  * Loaders
  */
+const loadingBarElement = document.querySelector(".loading-bar");
+
 const loadingManager = new THREE.LoadingManager(
   // Loaded
   () => {
@@ -14,7 +16,9 @@ const loadingManager = new THREE.LoadingManager(
   },
   // Progress
   (item, loaded, total) => {
-    console.log(item, loaded, total);
+    const progressRatio = loaded / total;
+    console.log(progressRatio);
+    loadingBarElement.style.transform = `scaleX(${progressRatio})`;
   }
 );
 const gltfLoader = new GLTFLoader(loadingManager);
