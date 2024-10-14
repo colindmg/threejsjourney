@@ -25,4 +25,10 @@ body {
   transform: scaleX(0);
   transform-origin: top left;
   transition: transform 0.5s;
+  will-change: transform;
+}
+
+.loading-bar.ended {
+  transform-origin: 100% 0;
+  transition: transform 1.5s ease-in-out;
 }
