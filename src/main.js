@@ -1,3 +1,4 @@
+import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -9,6 +10,7 @@ const loadingManager = new THREE.LoadingManager(
   // Loaded
   () => {
     console.log("loaded");
+    gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
   },
   // Progress
   (item, loaded, total) => {
