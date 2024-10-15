@@ -1,4 +1,4 @@
-import gsap from "gsap";
+import { gsap } from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -7,22 +7,28 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
  * Loaders
  */
 const loadingBarElement = document.querySelector(".loading-bar");
-
 const loadingManager = new THREE.LoadingManager(
   // Loaded
   () => {
-    console.log("loaded");
+    // Wait a little
+    window.setTimeout(() => {
+      // Animate overlay
+      gsap.to(overlayMaterial.uniforms.uAlpha, {
+        duration: 3,
+        value: 0,
+        delay: 1,
+      });
 
-    gsap.delayedCall(0.5, () => {
-      gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+      // Update loadingBarElement
       loadingBarElement.classList.add("ended");
       loadingBarElement.style.transform = "";
-    });
+    }, 500);
   },
+
   // Progress
-  (item, loaded, total) => {
-    const progressRatio = loaded / total;
-    console.log(progressRatio);
+  (itemUrl, itemsLoaded, itemsTotal) => {
+    // Calculate the progress and update the loadingBarElement
+    const progressRatio = itemsLoaded / itemsTotal;
     loadingBarElement.style.transform = `scaleX(${progressRatio})`;
   }
 );
@@ -46,22 +52,25 @@ const scene = new THREE.Scene();
  */
 const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 const overlayMaterial = new THREE.ShaderMaterial({
-  transparent: true,
   // wireframe: true,
+  transparent: true,
   uniforms: {
     uAlpha: { value: 1 },
   },
   vertexShader: `
-		void main() {
-			gl_Position = vec4(position, 1.0);
-		}
-	`,
+        void main()
+        {
+            gl_Position = vec4(position, 1.0);
+        }
+    `,
   fragmentShader: `
-		uniform float uAlpha;
-		void main() {
-			gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
-		}
-	`,
+        uniform float uAlpha;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+    `,
 });
 const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial);
 scene.add(overlay);
@@ -106,9 +115,8 @@ debugObject.envMapIntensity = 2.5;
 /**
  * Models
  */
-gltfLoader.load("/models/FlightHelmet/glTF/FlightHelmet.gltf", (gltf) => {
-  gltf.scene.scale.set(10, 10, 10);
-  gltf.scene.position.set(0, -4, 0);
+gltfLoader.load("/models/DamagedHelmet/glTF/DamagedHelmet.gltf", (gltf) => {
+  gltf.scene.scale.set(2.5, 2.5, 2.5);
   gltf.scene.rotation.y = Math.PI * 0.5;
   scene.add(gltf.scene);
 
