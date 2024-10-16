@@ -16,6 +16,7 @@ body {
   z-index: 0;
 }
 
+/* Loading bar */
 .loading-bar {
   position: absolute;
   top: 50%;
@@ -33,6 +34,7 @@ body {
   transition: transform 1.5s ease-in-out;
 }
 
+/* Points on the canvas */
 .point {
   position: absolute;
   top: 50%;
