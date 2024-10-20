@@ -124,6 +124,16 @@ gltfLoader.load("/models/DamagedHelmet/glTF/DamagedHelmet.gltf", (gltf) => {
 });
 
 /**
+ * Points of interest
+ */
+const points = [
+  {
+    position: new THREE.Vector3(1.55, 0.3, -0.6),
+    element: document.querySelector(".point-0"),
+  },
+];
+
+/**
  * Lights
  */
 const directionalLight = new THREE.DirectionalLight("#ffffff", 3);
@@ -193,6 +203,17 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const tick = () => {
   // Update controls
   controls.update();
+
+  // Go through each point
+  for (const point of points) {
+    const screenPosition = point.position.clone();
+    screenPosition.project(camera);
+
+    const translateX = screenPosition.x * sizes.width * 0.5;
+    const translateY = -screenPosition.y * sizes.height * 0.5;
+
+    point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`;
+  }
 
   // Render
   renderer.render(scene, camera);
