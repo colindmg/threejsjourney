@@ -8,6 +8,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
  * Base
  */
 // Debug
+const debugObject = {};
+
 const gui = new GUI({
   width: 400,
 });
@@ -130,6 +132,13 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Clear color
+debugObject.clearColor = "#251f1d";
+gui.addColor(debugObject, "clearColor").onChange(() => {
+  renderer.setClearColor(debugObject.clearColor);
+});
+renderer.setClearColor(debugObject.clearColor);
 
 /**
  * Animate
