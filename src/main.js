@@ -37,6 +37,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
  */
 const bakedTexture = textureLoader.load("baked.jpg");
 bakedTexture.flipY = false;
+bakedTexture.colorSpace = THREE.SRGBColorSpace;
 
 /**
  * Materials
