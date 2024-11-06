@@ -64,9 +64,8 @@ gltfLoader.load("portal.glb", (gltf) => {
   scene.add(gltf.scene);
 
   // Set the baked material
-  gltf.scene.traverse((child) => {
-    child.material = bakedMaterial;
-  });
+  const bakedMesh = gltf.scene.children.find((child) => child.name === "baked");
+  bakedMesh.material = bakedMaterial;
 
   // Pole light
   gltf.scene.children.find((child) => child.name === "poleLightA").material =
@@ -119,6 +118,8 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+// Limit the vertical rotation
+controls.maxPolarAngle = Math.PI / 2;
 
 /**
  * Renderer
