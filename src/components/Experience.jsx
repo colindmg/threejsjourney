@@ -1,4 +1,3 @@
-import { OrbitControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import CustomObject from "./CustomObject";
@@ -12,12 +11,18 @@ const Experience = () => {
   useFrame((state, delta) => {
     cubeRef.current.rotation.y += delta;
     // groupRef.current.rotation.y += delta;
+
+    // Animation of the camera
+    const angle = state.clock.getElapsedTime();
+    state.camera.position.x = Math.cos(angle * 0.3) * 8;
+    state.camera.position.z = Math.sin(angle * 0.3) * 8;
+    state.camera.lookAt(0, 0, 0);
   });
 
   return (
     <>
       {/* CONTROLS */}
-      <OrbitControls />
+      {/* <OrbitControls /> */}
 
       {/* LIGHTS */}
       <directionalLight position={[5, 5, 5]} intensity={4.5} />
