@@ -1,6 +1,7 @@
 import { OrbitControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
+import CustomObject from "./CustomObject";
 
 const Experience = () => {
   // REFS
@@ -10,7 +11,7 @@ const Experience = () => {
   // ANIMATIONS
   useFrame((state, delta) => {
     cubeRef.current.rotation.y += delta;
-    groupRef.current.rotation.y += delta;
+    // groupRef.current.rotation.y += delta;
   });
 
   return (
@@ -44,6 +45,9 @@ const Experience = () => {
         <planeGeometry />
         <meshStandardMaterial color="greenyellow" />
       </mesh>
+
+      {/* CUSTOM OBJECT */}
+      <CustomObject />
     </>
   );
 };
