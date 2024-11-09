@@ -1,10 +1,33 @@
 import { OrbitControls } from "@react-three/drei";
+import { button, useControls } from "leva";
 import { useRef } from "react";
 
 const Experience = () => {
   // REFS
   const cubeRef = useRef();
   const sphereRef = useRef();
+
+  // LEVA CONTROLS
+  const { position, visible, color } = useControls("Sphere", {
+    position: {
+      value: { x: -2, y: 0 },
+      step: 0.01,
+      joystick: "invertY",
+    },
+    visible: true,
+    color: "orange",
+    // interval: { value: [0, 10], min: 0, max: 100, step: 1 }, // Slider with interval
+    // button: button(() => console.log("Button clicked")), // Button
+    // choice: { options: ["Option 1", "Option 2"], value: "Option 1" }, // Dropdown
+  });
+
+  // Other useful tweaks exemples
+  const { interval, buttonTweak, choice } = useControls("Tweaks Exemple", {
+    interval: { value: [0, 10], min: 0, max: 100, step: 1 }, // Slider with interval
+    buttonTweak: button(() => console.log("Button clicked")), // Button
+    choice: { options: ["Option 1", "Option 2"], value: "Option 1" }, // Dropdown
+  });
+  console.log(interval, buttonTweak, choice);
 
   return (
     <>
@@ -16,9 +39,13 @@ const Experience = () => {
       <ambientLight intensity={1.5} />
 
       {/* MESHES */}
-      <mesh ref={sphereRef} position-x={-2}>
+      <mesh
+        visible={visible}
+        ref={sphereRef}
+        position={[position.x, position.y, 0]}
+      >
         <sphereGeometry />
-        <meshStandardMaterial color="orange" />
+        <meshStandardMaterial color={color} />
       </mesh>
 
       <mesh
