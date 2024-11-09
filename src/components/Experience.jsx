@@ -1,5 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
 import { button, useControls } from "leva";
+import { Perf } from "r3f-perf";
 import { useRef } from "react";
 
 const Experience = () => {
@@ -8,6 +9,10 @@ const Experience = () => {
   const sphereRef = useRef();
 
   // LEVA CONTROLS
+  const { perfVisible } = useControls("Performance Monitor", {
+    perfVisible: true,
+  });
+
   const { position, visible, color } = useControls("Sphere", {
     position: {
       value: { x: -2, y: 0 },
@@ -16,9 +21,6 @@ const Experience = () => {
     },
     visible: true,
     color: "orange",
-    // interval: { value: [0, 10], min: 0, max: 100, step: 1 }, // Slider with interval
-    // button: button(() => console.log("Button clicked")), // Button
-    // choice: { options: ["Option 1", "Option 2"], value: "Option 1" }, // Dropdown
   });
 
   // Other useful tweaks exemples
@@ -31,6 +33,9 @@ const Experience = () => {
 
   return (
     <>
+      {/* PERFORMANCE MONITOR */}
+      {perfVisible && <Perf position="top-left" />}
+
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
