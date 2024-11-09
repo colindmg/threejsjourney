@@ -1,23 +1,31 @@
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useHelper } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
+import * as THREE from "three";
 
 const Experience = () => {
   // REFS
   const cubeRef = useRef();
   const sphereRef = useRef();
+  const dirLightRef = useRef();
 
+  useHelper(dirLightRef, THREE.DirectionalLightHelper, 2);
+
+  // ANIMATION
   useFrame((state, delta) => {
     cubeRef.current.rotation.y += delta * 0.2;
   });
 
   return (
     <>
+      {/* BACKGROUND COLOR */}
+      <color attach={"background"} args={["ivory"]} />
+
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
       {/* LIGHTS */}
-      <directionalLight position={[5, 5, 5]} intensity={4.5} />
+      <directionalLight ref={dirLightRef} position={[1, 2, 3]} intensity={3} />
       <ambientLight intensity={1.5} />
 
       {/* MESHES */}
