@@ -1,5 +1,11 @@
-import { ContactShadows, OrbitControls, useHelper } from "@react-three/drei";
+import {
+  ContactShadows,
+  OrbitControls,
+  Sky,
+  useHelper,
+} from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { useControls } from "leva";
 import { useRef } from "react";
 import * as THREE from "three";
 
@@ -14,6 +20,11 @@ const Experience = () => {
   // ANIMATION
   useFrame((state, delta) => {
     cubeRef.current.rotation.y += delta * 0.2;
+  });
+
+  // CONTROLS
+  const { sunPosition } = useControls("Sky", {
+    sunPosition: { value: [1, 2, 3] },
   });
 
   return (
@@ -56,7 +67,7 @@ const Experience = () => {
       {/* LIGHTS */}
       <directionalLight
         ref={dirLightRef}
-        position={[1, 2, 3]}
+        position={sunPosition}
         intensity={3}
         castShadow
         shadow-mapSize={[1024, 1024]}
@@ -68,6 +79,9 @@ const Experience = () => {
         shadow-camera-left={-5}
       />
       <ambientLight intensity={1.5} />
+
+      {/* SKY */}
+      <Sky sunPosition={sunPosition} />
 
       {/* MESHES */}
       <mesh castShadow ref={sphereRef} position-x={-2}>
