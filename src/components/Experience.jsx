@@ -1,30 +1,40 @@
 import {
   ContactShadows,
+  Environment,
   OrbitControls,
-  Sky,
   useHelper,
 } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const Experience = () => {
   // REFS
   const cubeRef = useRef();
   const sphereRef = useRef();
+
   const dirLightRef = useRef();
-
   useHelper(dirLightRef, THREE.DirectionalLightHelper, 2, "red");
-
-  // ANIMATION
-  useFrame((state, delta) => {
-    cubeRef.current.rotation.y += delta * 0.2;
-  });
 
   // CONTROLS
   const { sunPosition } = useControls("Sky", {
     sunPosition: { value: [1, 2, 3] },
+  });
+
+  const { envMapIntensity } = useControls("Environment", {
+    envMapIntensity: { value: 3, min: 0, max: 12 },
+  });
+
+  // THREE JS SCENE
+  const scene = useThree((state) => state.scene);
+  useEffect(() => {
+    scene.environmentIntensity = envMapIntensity;
+  }, [envMapIntensity, scene]);
+
+  // ANIMATION
+  useFrame((state, delta) => {
+    cubeRef.current.rotation.y += delta * 0.2;
   });
 
   return (
@@ -35,7 +45,41 @@ const Experience = () => {
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
-      {/* HELPERS */}
+      <Environment
+        // background
+        environmentIntensity={envMapIntensity}
+        preset="sunset"
+        ground={{
+          height: 7,
+          radius: 28,
+          scale: 100,
+        }}
+        // resolution={32}
+        // files={[
+        //   "/environmentMaps/2/px.jpg",
+        //   "/environmentMaps/2/nx.jpg",
+        //   "/environmentMaps/2/py.jpg",
+        //   "/environmentMaps/2/ny.jpg",
+        //   "/environmentMaps/2/pz.jpg",
+        //   "/environmentMaps/2/nz.jpg",
+        // ]}
+        // files={"/environmentMaps/the_sky_is_on_fire_2k.hdr"}
+      >
+        {/* <color args={["black"]} attach={"background"} /> */}
+        {/* <mesh position-z={-5} scale={10}>
+          <planeGeometry />
+          <meshBasicMaterial color={[1, 0, 0]} />
+        </mesh> */}
+        {/* <Lightformer
+          position-z={-5}
+          scale={10}
+          color={"red"}
+          intensity={10}
+          form={"ring"}
+        /> */}
+      </Environment>
+
+      {/* SHADOW HELPERS */}
       {/* <BakeShadows /> */}
       {/* <SoftShadows size={25} samples={10} focus={0} /> */}
       {/* <AccumulativeShadows
@@ -65,7 +109,7 @@ const Experience = () => {
       />
 
       {/* LIGHTS */}
-      <directionalLight
+      {/* <directionalLight
         ref={dirLightRef}
         position={sunPosition}
         intensity={3}
@@ -78,10 +122,10 @@ const Experience = () => {
         shadow-camera-right={5}
         shadow-camera-left={-5}
       />
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={1.5} /> */}
 
       {/* SKY */}
-      <Sky sunPosition={sunPosition} />
+      {/* <Sky sunPosition={sunPosition} /> */}
 
       {/* MESHES */}
       <mesh castShadow ref={sphereRef} position-x={-2}>
