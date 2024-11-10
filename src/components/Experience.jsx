@@ -1,17 +1,9 @@
 import { OrbitControls } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Suspense } from "react";
+import Model from "./Model";
+import Placeholder from "./Placeholder";
 
 export default function Experience() {
-  // Load GLTF model
-  const model = useLoader(GLTFLoader, "./hamburger-draco.glb", (loader) => {
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("./draco/");
-    loader.setDRACOLoader(dracoLoader);
-  });
-  console.log(model);
-
   return (
     <>
       {/* CONTROLS */}
@@ -32,7 +24,9 @@ export default function Experience() {
         <meshStandardMaterial color="greenyellow" />
       </mesh>
 
-      <primitive scale={0.3} object={model.scene} />
+      <Suspense fallback={<Placeholder position-y={0.5} scale={[2, 3, 2]} />}>
+        <Model />
+      </Suspense>
     </>
   );
 }
