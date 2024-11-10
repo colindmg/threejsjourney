@@ -4,7 +4,8 @@ import {
   Text3D,
   useMatcapTexture,
 } from "@react-three/drei";
-import { useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const torusGeometry = new THREE.TorusGeometry(1, 0.6, 16, 32);
@@ -14,6 +15,9 @@ export default function Experience() {
   // STORING GEOMETRY AND MATERIAL
   // const [torusGeometry, setTorusGeometry] = useState();
   // const [matcapMaterial, setMatcapMaterial] = useState();
+
+  // REFS
+  const donuts = useRef([]);
 
   // MATCAP TEXTURE
   const [matcapTexture] = useMatcapTexture("8B892C_D4E856_475E2D_47360A", 256);
@@ -25,6 +29,16 @@ export default function Experience() {
     matcapMaterial.matcap = matcapTexture;
     matcapMaterial.needsUpdate = true;
   }, [matcapTexture]);
+
+  useFrame(
+    (state, delta) => {
+      donuts.current.forEach((donut) => {
+        donut.rotation.x += delta * 0.5;
+        donut.rotation.y += delta * 0.5;
+      });
+    },
+    [donuts]
+  );
 
   return (
     <>
@@ -53,9 +67,10 @@ export default function Experience() {
       </Center>
 
       {/* DONUTS */}
-      {[...Array(100)].map((donut, index) => (
+      {[...Array(100)].map((value, index) => (
         <mesh
           key={"Donut number " + index}
+          ref={(element) => (donuts.current[index] = element)}
           position={[
             (Math.random() - 0.5) * 10,
             (Math.random() - 0.5) * 10,
