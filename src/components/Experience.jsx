@@ -1,40 +1,36 @@
-import { OrbitControls } from "@react-three/drei";
-import { Suspense } from "react";
-import Fox from "./Fox";
-import Hamburger from "./Hamburger";
-import Placeholder from "./Placeholder";
+import {
+  Center,
+  OrbitControls,
+  Text3D,
+  useMatcapTexture,
+} from "@react-three/drei";
 
 export default function Experience() {
+  const [matcapTexture] = useMatcapTexture("8B892C_D4E856_475E2D_47360A", 256);
+  console.log(matcapTexture);
+
   return (
     <>
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
-      {/* LIGHTS */}
-      <directionalLight
-        castShadow
-        position={[1, 2, 3]}
-        intensity={4.5}
-        shadow-normalBias={0.04}
-      />
-      <ambientLight intensity={1.5} />
-
-      {/* OBJECTS */}
-      <mesh
-        receiveShadow
-        position-y={-1}
-        rotation-x={-Math.PI * 0.5}
-        scale={10}
-      >
-        <planeGeometry />
-        <meshStandardMaterial color="greenyellow" />
-      </mesh>
-
-      <Suspense fallback={<Placeholder position-y={0.5} scale={[2, 3, 2]} />}>
-        <Hamburger scale={0.35} />
-      </Suspense>
-
-      <Fox />
+      {/* TEXT */}
+      <Center>
+        <Text3D
+          font={"/fonts/helvetiker_regular.typeface.json"}
+          size={0.75}
+          height={0.2}
+          curveSegments={12}
+          bevelEnabled
+          bevelThickness={0.02}
+          bevelSize={0.02}
+          bevelOffset={0}
+          bevelSegments={5}
+        >
+          Hello, World!
+          <meshMatcapMaterial matcap={matcapTexture} />
+        </Text3D>
+      </Center>
     </>
   );
 }
