@@ -1,11 +1,10 @@
 import { OrbitControls } from "@react-three/drei";
 import {
+  Bloom,
   EffectComposer,
-  Glitch,
-  Noise,
   ToneMapping,
 } from "@react-three/postprocessing";
-import { BlendFunction, ToneMappingMode } from "postprocessing";
+import { ToneMappingMode } from "postprocessing";
 import { Perf } from "r3f-perf";
 
 export default function Experience() {
@@ -22,13 +21,14 @@ export default function Experience() {
           darkness={0.9}
           blendFunction={BlendFunction.NORMAL}
         /> */}
-        <Glitch
+        {/* <Glitch
           delay={[0.5, 1]}
           duration={[0.1, 0.3]}
           strength={[0.2, 0.4]}
           // mode={GlitchMode.CONSTANT_MILD}
-        />
-        <Noise premultiply={false} blendFunction={BlendFunction.OVERLAY} />
+        /> */}
+        {/* <Noise premultiply={false} blendFunction={BlendFunction.OVERLAY} /> */}
+        <Bloom luminanceThreshold={0} intensity={0.5} mipmapBlur />
       </EffectComposer>
 
       {/* PERFS */}
@@ -49,7 +49,7 @@ export default function Experience() {
 
       <mesh castShadow position-x={2} scale={1.5}>
         <boxGeometry />
-        <meshStandardMaterial color={[1.5, 1, 4]} toneMapped={false} />
+        <meshBasicMaterial color={[1.5, 1, 4]} />
       </mesh>
 
       <mesh
