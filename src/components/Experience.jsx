@@ -1,14 +1,26 @@
 import { OrbitControls } from "@react-three/drei";
-import { EffectComposer, ToneMapping } from "@react-three/postprocessing";
-import { ToneMappingMode } from "postprocessing";
+import {
+  EffectComposer,
+  ToneMapping,
+  Vignette,
+} from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
 import { Perf } from "r3f-perf";
 
 export default function Experience() {
   return (
     <>
+      {/* BACKGROUND COLOR */}
+      <color attach="background" args={["#FFF"]} />
+
       {/* POST-PROCESSING */}
       <EffectComposer multisampling={8}>
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+        <Vignette
+          offset={0.3}
+          darkness={0.9}
+          blendFunction={BlendFunction.NORMAL}
+        />
       </EffectComposer>
 
       {/* PERFS */}
