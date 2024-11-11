@@ -1,8 +1,9 @@
 import { OrbitControls } from "@react-three/drei";
 import {
   EffectComposer,
+  Glitch,
+  Noise,
   ToneMapping,
-  Vignette,
 } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import { Perf } from "r3f-perf";
@@ -11,16 +12,23 @@ export default function Experience() {
   return (
     <>
       {/* BACKGROUND COLOR */}
-      <color attach="background" args={["#FFF"]} />
+      <color attach="background" args={["#222"]} />
 
       {/* POST-PROCESSING */}
       <EffectComposer multisampling={8}>
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Vignette
+        {/* <Vignette
           offset={0.3}
           darkness={0.9}
           blendFunction={BlendFunction.NORMAL}
+        /> */}
+        <Glitch
+          delay={[0.5, 1]}
+          duration={[0.1, 0.3]}
+          strength={[0.2, 0.4]}
+          // mode={GlitchMode.CONSTANT_MILD}
         />
+        <Noise premultiply={false} blendFunction={BlendFunction.OVERLAY} />
       </EffectComposer>
 
       {/* PERFS */}
@@ -41,7 +49,7 @@ export default function Experience() {
 
       <mesh castShadow position-x={2} scale={1.5}>
         <boxGeometry />
-        <meshStandardMaterial color="mediumpurple" />
+        <meshStandardMaterial color={[1.5, 1, 4]} toneMapped={false} />
       </mesh>
 
       <mesh
