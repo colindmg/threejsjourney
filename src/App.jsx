@@ -4,7 +4,7 @@ import Experience from "./components/Experience";
 function App() {
   return (
     <>
-      <Canvas style={{ height: "100dvh", width: "100vw" }}>
+      <Canvas style={{ height: "100dvh", width: "100vw", touchAction: "none" }}>
         <Experience />
       </Canvas>
     </>
