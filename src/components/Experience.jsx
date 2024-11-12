@@ -4,6 +4,7 @@ import {
   Float,
   Html,
   PresentationControls,
+  Text,
   useGLTF,
 } from "@react-three/drei";
 
@@ -48,6 +49,16 @@ export default function Experience() {
               <iframe src="https://bruno-simon.com/html" />
             </Html>
           </primitive>
+          <Text
+            font="/bangers.woff"
+            fontSize={1}
+            position={[2, 0.75, 0.75]}
+            rotation-y={-1.25}
+            maxWidth={2}
+            textAlign="center"
+          >
+            BRUNO SIMON
+          </Text>
         </Float>
       </PresentationControls>
 
