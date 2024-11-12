@@ -1,4 +1,4 @@
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Environment, Float, OrbitControls, useGLTF } from "@react-three/drei";
 
 export default function Experience() {
   const computer = useGLTF("/macbook.gltf");
@@ -8,9 +8,16 @@ export default function Experience() {
       {/* BACKGROUND COLOR */}
       <color attach="background" args={["#241A1A"]} />
 
+      {/* CONTROLS */}
       <OrbitControls makeDefault />
 
-      <primitive object={computer.scene} />
+      {/* ENVIRONMENT */}
+      <Environment preset="city" />
+
+      {/* OBJECT */}
+      <Float rotationIntensity={0.4}>
+        <primitive position-y={-1.2} object={computer.scene} />
+      </Float>
     </>
   );
 }
