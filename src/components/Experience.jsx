@@ -1,5 +1,5 @@
 import { OrbitControls } from "@react-three/drei";
-import { Physics, RigidBody } from "@react-three/rapier";
+import { BallCollider, Physics, RigidBody } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 
 export default function Experience() {
@@ -16,21 +16,29 @@ export default function Experience() {
       <ambientLight intensity={1.5} />
 
       {/* OBJECTS */}
-      <Physics>
-        <RigidBody>
-          <mesh castShadow position={[-2, 2, 0]}>
+      <Physics debug>
+        <RigidBody colliders="ball">
+          <mesh castShadow position={[0, 4, 0]}>
             <sphereGeometry />
             <meshStandardMaterial color="orange" />
           </mesh>
         </RigidBody>
 
-        <mesh castShadow position={[2, 2, 0]}>
-          <boxGeometry />
-          <meshStandardMaterial color="mediumpurple" />
-        </mesh>
+        <RigidBody
+          colliders={false}
+          position={[0, 1, 0]}
+          rotation-x={Math.PI * 0.5}
+        >
+          {/* <CuboidCollider args={[1.5, 1.5, 0.5]} /> */}
+          <BallCollider args={[1.5]} />
+          <mesh>
+            <torusGeometry args={[1, 0.4, 16, 100]} />
+            <meshStandardMaterial color="hotpink" />
+          </mesh>
+        </RigidBody>
 
         <RigidBody type="fixed">
-          <mesh receiveShadow position-y={-1.25}>
+          <mesh receiveShadow>
             <boxGeometry args={[10, 0.5, 10]} />
             <meshStandardMaterial color="greenyellow" />
           </mesh>
