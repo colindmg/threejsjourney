@@ -2,10 +2,14 @@ import { OrbitControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 
 export default function Experience() {
+  // STATES
+  const [hitSound] = useState(() => new Audio("/hit.mp3"));
+
+  // REFS
   const cube = useRef();
   const twister = useRef();
 
@@ -19,6 +23,13 @@ export default function Experience() {
       y: Math.random() - 0.5,
       z: Math.random() - 0.5,
     });
+  };
+
+  const cubeCollision = () => {
+    console.log("Cube collided");
+    hitSound.currentTime = 0;
+    hitSound.volume = Math.random();
+    hitSound.play();
   };
 
   useFrame((state) => {
@@ -64,6 +75,10 @@ export default function Experience() {
           restitution={0.5}
           friction={0.7}
           colliders={false}
+          onCollisionEnter={cubeCollision}
+          onCollisionExit={() => console.log("Cube exited")}
+          onSleep={() => console.log("Cube slept")}
+          onWake={() => console.log("Cube woke")}
         >
           <CuboidCollider mass={2} args={[0.5, 0.5, 0.5]} />
           <mesh castShadow onClick={cubeJump}>
