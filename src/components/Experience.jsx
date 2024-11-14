@@ -1,11 +1,18 @@
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  CylinderCollider,
+  Physics,
+  RigidBody,
+} from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 
 export default function Experience() {
+  const hamburger = useGLTF("/hamburger.glb");
+
   // STATES
   const [hitSound] = useState(() => new Audio("/hit.mp3"));
 
@@ -105,6 +112,12 @@ export default function Experience() {
             <boxGeometry args={[10, 0.5, 10]} />
             <meshStandardMaterial color="greenyellow" />
           </mesh>
+        </RigidBody>
+
+        {/* HAMBURGER */}
+        <RigidBody colliders={false} position={[0, 4, 0]}>
+          <CylinderCollider mass={1} args={[0.5, 1.25]} />
+          <primitive object={hamburger.scene} scale={0.25} />
         </RigidBody>
       </Physics>
     </>
