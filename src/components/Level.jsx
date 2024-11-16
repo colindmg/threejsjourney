@@ -274,6 +274,7 @@ Bounds.propTypes = {
 export const Level = ({
   count = 5,
   types = [BlockSpinner, BlockLimbo, BlockAxe],
+  seed = 0,
 }) => {
   // CREATING THE LEVEL
   const blocks = useMemo(() => {
@@ -285,7 +286,7 @@ export const Level = ({
     }
 
     return blocks;
-  }, [count, types]);
+  }, [count, types, seed]);
 
   return (
     <>
@@ -309,4 +310,5 @@ export const Level = ({
 Level.propTypes = {
   count: PropTypes.number,
   types: PropTypes.array,
+  seed: PropTypes.number,
 };

@@ -3,8 +3,10 @@ import { useFrame } from "@react-three/fiber";
 import { RigidBody, useRapier } from "@react-three/rapier";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import useGame from "../stores/useGame";
 
 const Player = () => {
+  // VARIABLES AND HOOKS
   const body = useRef();
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const { rapier, world } = useRapier();
@@ -14,19 +16,44 @@ const Player = () => {
   );
   const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
 
-  // JUMP CONTROL
-  useEffect(() => {
-    const jump = () => {
-      const origin = body.current.translation();
-      origin.y -= 0.31;
-      const direction = { x: 0, y: -1, z: 0 };
-      const ray = new rapier.Ray(origin, direction);
-      const hit = world.castRay(ray, 10, true);
+  // ZUSTAND STORE
+  const start = useGame((state) => state.start);
+  const end = useGame((state) => state.end);
+  const restart = useGame((state) => state.restart);
+  const blocksCount = useGame((state) => state.blocksCount);
 
-      if (hit.timeOfImpact < 0.15) {
-        body.current.applyImpulse({ x: 0, y: 0.5, z: 0 });
+  // ------------------------------------
+
+  // RESET PLAYER POSITION
+  const reset = () => {
+    body.current.setTranslation({ x: 0, y: 1, z: 0 });
+    body.current.setLinvel({ x: 0, y: 0, z: 0 });
+    body.current.setAngvel({ x: 0, y: 0, z: 0 });
+  };
+
+  // JUMP FUNCTION
+  const jump = () => {
+    const origin = body.current.translation();
+    origin.y -= 0.31;
+    const direction = { x: 0, y: -1, z: 0 };
+    const ray = new rapier.Ray(origin, direction);
+    const hit = world.castRay(ray, 10, true);
+
+    if (hit.timeOfImpact < 0.15) {
+      body.current.applyImpulse({ x: 0, y: 0.5, z: 0 });
+    }
+  };
+
+  // USE EFFECT
+  useEffect(() => {
+    const unsubscribeReset = useGame.subscribe(
+      (state) => state.phase,
+      (value) => {
+        if (value === "ready") {
+          reset();
+        }
       }
-    };
+    );
 
     const unscubscribeJump = subscribeKeys(
       (state) => state.jump,
@@ -37,11 +64,20 @@ const Player = () => {
       }
     );
 
+    const unsubscribeAny = subscribeKeys(() => {
+      start();
+    });
+
     return () => {
+      unsubscribeReset();
       unscubscribeJump();
+      unsubscribeAny();
     };
   });
 
+  // ------------------------------------
+
+  // MOVEMENT AND CAMERA CONTROL
   useFrame((state, delta) => {
     // CONTROLS
     const { forward, backward, leftward, rightward } = getKeys();
@@ -88,6 +124,14 @@ const Player = () => {
 
     state.camera.position.copy(smoothedCameraPosition);
     state.camera.lookAt(smoothedCameraTarget);
+
+    // PHASES (END GAME)
+    if (bodyPosition.z < -(blocksCount * 4 + 2)) {
+      end();
+    }
+    if (bodyPosition.y < -4) {
+      restart();
+    }
   });
 
   return (

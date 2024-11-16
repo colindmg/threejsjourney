@@ -1,10 +1,14 @@
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
+import useGame from "../stores/useGame.js";
 import { Level } from "./Level.jsx";
 import Lights from "./Lights.jsx";
 import Player from "./Player.jsx";
 
 export default function Experience() {
+  const blocksCount = useGame((state) => state.blocksCount);
+  const blocksSeed = useGame((state) => state.blocksSeed);
+
   return (
     <>
       {/* PERFORMANCE MONITOR */}
@@ -15,7 +19,7 @@ export default function Experience() {
         <Lights />
 
         {/* LEVEL */}
-        <Level />
+        <Level count={blocksCount} seed={blocksSeed} />
 
         {/* PLAYER (MARBLE) */}
         <Player />
