@@ -14,6 +14,9 @@ export default function Experience() {
       {/* PERFORMANCE MONITOR */}
       <Perf position={"top-left"} />
 
+      {/* BG COLOR */}
+      <color attach="background" args={["#BDEDFC"]} />
+
       <Physics debug={false}>
         {/* LIGHTS */}
         <Lights />
