@@ -3,6 +3,7 @@ import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { Level } from "./Level.jsx";
 import Lights from "./Lights.jsx";
+import Player from "./Player.jsx";
 
 export default function Experience() {
   return (
@@ -13,12 +14,15 @@ export default function Experience() {
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
-      <Physics debug>
+      <Physics debug={false}>
         {/* LIGHTS */}
         <Lights />
 
         {/* LEVEL */}
         <Level />
+
+        {/* PLAYER (MARBLE) */}
+        <Player />
       </Physics>
     </>
   );
