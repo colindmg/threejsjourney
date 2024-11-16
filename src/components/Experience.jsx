@@ -7,14 +7,17 @@ import Lights from "./Lights.jsx";
 export default function Experience() {
   return (
     <>
+      {/* PERFORMANCE MONITOR */}
       <Perf position={"top-left"} />
+
       {/* CONTROLS */}
       <OrbitControls makeDefault />
 
       <Physics debug>
         {/* LIGHTS */}
         <Lights />
-        {/* OBJECTS */}
+
+        {/* LEVEL */}
         <Level />
       </Physics>
     </>
