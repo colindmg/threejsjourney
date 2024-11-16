@@ -1,6 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import PropTypes from "prop-types";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -26,6 +27,10 @@ const BlockStart = ({ position = [0, 0, 0] }) => {
       </group>
     </>
   );
+};
+
+BlockStart.propTypes = {
+  position: PropTypes.array,
 };
 
 // ---------------------------------------
@@ -78,6 +83,10 @@ export const BlockSpinner = ({ position = [0, 0, 0] }) => {
   );
 };
 
+BlockSpinner.propTypes = {
+  position: PropTypes.array,
+};
+
 // LIMBO OBSTACLE BLOCK
 export const BlockLimbo = ({ position = [0, 0, 0] }) => {
   const obstacle = useRef();
@@ -126,6 +135,10 @@ export const BlockLimbo = ({ position = [0, 0, 0] }) => {
   );
 };
 
+BlockLimbo.propTypes = {
+  position: PropTypes.array,
+};
+
 // AXE OBSTACLE BLOCK
 export const BlockAxe = ({ position = [0, 0, 0] }) => {
   const obstacle = useRef();
@@ -169,6 +182,10 @@ export const BlockAxe = ({ position = [0, 0, 0] }) => {
   );
 };
 
+BlockAxe.propTypes = {
+  position: PropTypes.array,
+};
+
 // ---------------------------------------
 
 // END BLOCK OF THE GAME
@@ -200,6 +217,10 @@ const BlockEnd = ({ position = [0, 0, 0] }) => {
       </group>
     </>
   );
+};
+
+BlockEnd.propTypes = {
+  position: PropTypes.array,
 };
 
 // ---------------------------------------
@@ -243,6 +264,10 @@ const Bounds = ({ length = 1 }) => {
   );
 };
 
+Bounds.propTypes = {
+  length: PropTypes.number,
+};
+
 // ---------------------------------------
 
 // FULL LEVEL OF THE GAME
@@ -262,8 +287,6 @@ export const Level = ({
     return blocks;
   }, [count, types]);
 
-  console.log(blocks);
-
   return (
     <>
       {/* START OF THE GAME */}
@@ -281,4 +304,9 @@ export const Level = ({
       <Bounds length={count + 2} />
     </>
   );
+};
+
+Level.propTypes = {
+  count: PropTypes.number,
+  types: PropTypes.array,
 };

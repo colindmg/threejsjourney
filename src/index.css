@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("/bebas.woff");
+}
+
+html,
+body {
+  overflow: hidden;
+  font-family: "Bebas Neue", cursive;
+}

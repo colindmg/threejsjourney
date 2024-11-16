@@ -1,6 +1,7 @@
 import { KeyboardControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Experience from "./components/Experience";
+import Interface from "./components/Interface";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           { name: "jump", keys: ["Space"] },
         ]}
       >
+        {/* R3F */}
         <Canvas
           shadows
           camera={{
@@ -26,6 +28,9 @@ function App() {
         >
           <Experience />
         </Canvas>
+
+        {/* INTERFACE */}
+        <Interface />
       </KeyboardControls>
     </>
   );
