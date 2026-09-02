@@ -1,8 +1,32 @@
-# React + Vite
+# Vanilla TS + Three Boilerplate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Structure of the classes directory
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+├── classes
+│   ├── Experience.ts
+│   ├── core
+│   │   ├── Camera.ts
+│   │   ├── Renderer.ts
+│   │   ├── Scene.ts
+│   │   ├── Renderer.ts
+│   │   └── Raycaster.ts
+│   ├── handlers
+│   │   ├── InputHandler.ts
+│   │   ├── MouseHandler.ts
+│   │   ├── TouchHandler.ts
+│   │   └── WheelHandler.ts
+|   ├── utils
+|   |   └── EventEmitter.ts
+|   ├── systems
+│   │   ├── ViewportSystem.ts
+|   |   └── TimeSystem.ts
+|   ├── managers
+│   |   ├── FileManager.ts
+│   |   ├── SoundManager.ts
+│   |   └── DebugManager.ts
+|   └── elements
+|       ├── BaseElement.ts
+|       ├── TextElement.ts
+|       └── ImageElement.ts
+```
